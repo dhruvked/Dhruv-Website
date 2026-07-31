@@ -1,0 +1,265 @@
+:root {
+  --bg-dark: #040406;
+  --bg-surface: #08090c;
+  --bg-tile: #0a0c10;
+  --bg-tile-hover: #12141c;
+  --bg-blank: #020203;
+
+  --border-hairline: rgba(255, 255, 255, 0.1);
+  --border-orange: rgba(255, 107, 0, 0.35);
+
+  --accent-orange: #ff6b00;
+  --accent-orange-bright: #ff8533;
+  --accent-orange-glow: rgba(255, 107, 0, 0.22);
+
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --grid-unit-min-width: 70px;
+  --grid-unit-min-height: 50px;
+
+  --transition-3d: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root, .app-root-wrapper {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden !important;
+  background-color: var(--bg-dark);
+  color: #ffffff;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-root-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Universal Page Snap Container */
+.page-snap-container {
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scroll-snap-type: y mandatory !important;
+  scroll-behavior: smooth !important;
+  background: var(--bg-dark);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* DESKTOP & LAPTOP & TABLET (min-width: 681px): 100vh Page Frame Snap */
+@media (min-width: 681px) {
+  .grid-12row-page {
+    width: 100vw;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+    scroll-snap-align: start !important;
+    scroll-snap-stop: always !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  .monolithic-12x12-matrix {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(var(--grid-unit-min-width), 1fr));
+    grid-template-rows: repeat(12, minmax(var(--grid-unit-min-height), 1fr));
+    grid-auto-flow: dense;
+    width: 100%;
+    max-width: 1360px;
+    height: 100vh;
+    border-left: 1px solid var(--border-hairline);
+    border-right: 1px solid var(--border-hairline);
+    border-top: 1px solid var(--border-hairline);
+    border-bottom: 1px solid var(--border-hairline);
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-dark);
+    contain: layout paint;
+  }
+
+  .cube-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-width: var(--grid-unit-min-width);
+    min-height: var(--grid-unit-min-height);
+    perspective: 1000px;
+    border-right: 1px solid var(--border-hairline);
+    border-bottom: 1px solid var(--border-hairline);
+    overflow: hidden;
+    background: var(--bg-tile);
+    isolation: isolate;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+}
+
+/* MOBILE NARROW VIEW (< 680px): 1 Tile Per 100dvh Frame View Restored */
+@media (max-width: 680px) {
+  html, body, #root, .app-root-wrapper, .page-snap-container {
+    height: 100% !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scroll-snap-type: y mandatory !important;
+    scroll-behavior: smooth !important;
+  }
+
+  .grid-12row-page {
+    width: 100vw !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    scroll-snap-align: none !important;
+  }
+
+  .monolithic-12x12-matrix {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100vw !important;
+    height: auto !important;
+    border: none !important;
+    background: var(--bg-dark);
+  }
+
+  .cube-wrapper {
+    position: relative;
+    width: 100vw !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
+    flex-shrink: 0 !important;
+    perspective: 1000px;
+    border-bottom: 1px solid var(--border-hairline) !important;
+    border-right: none !important;
+    overflow: hidden;
+    background: var(--bg-tile);
+    isolation: isolate;
+    scroll-snap-align: start !important;
+    scroll-snap-stop: always !important;
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+  }
+}
+
+.cube-wrapper:hover {
+  border-color: rgba(255, 107, 0, 0.3);
+  box-shadow: inset 0 0 16px rgba(255, 107, 0, 0.05);
+}
+
+.cube-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: var(--transition-3d);
+}
+
+.cube-inner.is-rotated {
+  transform: rotateY(-180deg);
+}
+
+/* Cube Faces */
+.cube-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: var(--bg-tile);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: background 0.3s ease;
+}
+
+.cube-face-front {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.cube-face-side {
+  transform: rotateY(180deg);
+  background: #06070a;
+  z-index: 1;
+}
+
+.cube-wrapper:hover .cube-face-front {
+  background-color: var(--bg-tile-hover);
+}
+
+/* Blank Negative Space Tile */
+.cube-face-blank {
+  background: var(--bg-blank);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Buttons & Badges */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--accent-orange);
+  color: #040406;
+}
+
+.btn-primary:hover {
+  background: var(--accent-orange-bright);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-hairline);
+}
+
+.btn-outline:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-orange);
+}
+
+.tech-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-secondary);
+}
