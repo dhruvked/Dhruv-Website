@@ -29,14 +29,21 @@ export const TileCube: React.FC<TileCubeProps> = ({
     }
   };
 
-  // Drag Handle Mouse Down Handler
-  const handleDragStart = (e: React.MouseEvent) => {
+  // Extract X, Y coordinates from Mouse or Touch event
+  const getCoords = (e: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent) => {
+    if ('touches' in e && e.touches.length > 0) {
+      return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+    }
+    const mouseEvt = e as MouseEvent | React.MouseEvent;
+    return { clientX: mouseEvt.clientX, clientY: mouseEvt.clientY };
+  };
+
+  // Drag Handle Start Handler (Supports Mouse and Touch)
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
     if (onSelect) onSelect(tile.id);
 
-    const startX = e.clientX;
-    const startY = e.clientY;
-
+    const { clientX: startX, clientY: startY } = getCoords(e);
     const initialColStart = colStart || 1;
     const initialRowStart = rowStart || 1;
 
@@ -47,9 +54,12 @@ export const TileCube: React.FC<TileCubeProps> = ({
     const cellWidth = Math.max(70, rect.width / 12);
     const cellHeight = Math.max(50, rect.height / 12);
 
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      const deltaX = moveEvent.clientX - startX;
-      const deltaY = moveEvent.clientY - startY;
+    const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
+      if (moveEvent.cancelable) moveEvent.preventDefault();
+      const { clientX, clientY } = getCoords(moveEvent);
+
+      const deltaX = clientX - startX;
+      const deltaY = clientY - startY;
 
       const colDelta = Math.round(deltaX / cellWidth);
       const rowDelta = Math.round(deltaY / cellHeight);
@@ -67,23 +77,25 @@ export const TileCube: React.FC<TileCubeProps> = ({
       }
     };
 
-    const handleMouseUp = () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+    const handleEnd = () => {
+      window.removeEventListener('mousemove', handleMove as any);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleMove as any);
+      window.removeEventListener('touchend', handleEnd);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', handleMove as any);
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleMove as any, { passive: false });
+    window.addEventListener('touchend', handleEnd);
   };
 
-  // Resize Corner Mouse Down Handler (Minimum 1 Unit Width & Height)
-  const handleResizeStart = (e: React.MouseEvent) => {
+  // Resize Corner Start Handler (Supports Mouse and Touch)
+  const handleResizeStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
     if (onSelect) onSelect(tile.id);
 
-    const startX = e.clientX;
-    const startY = e.clientY;
-
+    const { clientX: startX, clientY: startY } = getCoords(e);
     const initialColSpan = colSpan;
     const initialRowSpan = rowSpan;
 
@@ -94,14 +106,16 @@ export const TileCube: React.FC<TileCubeProps> = ({
     const cellWidth = Math.max(70, rect.width / 12);
     const cellHeight = Math.max(50, rect.height / 12);
 
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      const deltaX = moveEvent.clientX - startX;
-      const deltaY = moveEvent.clientY - startY;
+    const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
+      if (moveEvent.cancelable) moveEvent.preventDefault();
+      const { clientX, clientY } = getCoords(moveEvent);
+
+      const deltaX = clientX - startX;
+      const deltaY = clientY - startY;
 
       const colSpanDelta = Math.round(deltaX / cellWidth);
       const rowSpanDelta = Math.round(deltaY / cellHeight);
 
-      // Enforce Minimum Unit Width (1 Col) & Minimum Unit Height (1 Row)
       const newColSpan = Math.max(1, Math.min(12, initialColSpan + colSpanDelta));
       const newRowSpan = Math.max(1, Math.min(12, initialRowSpan + rowSpanDelta));
 
@@ -115,13 +129,17 @@ export const TileCube: React.FC<TileCubeProps> = ({
       }
     };
 
-    const handleMouseUp = () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+    const handleEnd = () => {
+      window.removeEventListener('mousemove', handleMove as any);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleMove as any);
+      window.removeEventListener('touchend', handleEnd);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', handleMove as any);
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleMove as any, { passive: false });
+    window.addEventListener('touchend', handleEnd);
   };
 
   // Blank Negative Space Tile
@@ -161,11 +179,12 @@ export const TileCube: React.FC<TileCubeProps> = ({
         cursor: 'pointer'
       }}
     >
-      {/* Top Visual Drag Handle */}
+      {/* Top Visual Drag Handle (Supports Mouse & Touch) */}
       <div
         onMouseDown={handleDragStart}
+        onTouchStart={handleDragStart}
         className="tile-drag-handle"
-        title="Click & Drag to reposition tile"
+        title="Touch & Drag to reposition tile"
       >
         <GripVertical size={13} style={{ color: accentColor }} />
         <span>DRAG TILE</span>
@@ -247,11 +266,12 @@ export const TileCube: React.FC<TileCubeProps> = ({
         </div>
       </div>
 
-      {/* Bottom-Right Visual Corner Resize Handle */}
+      {/* Bottom-Right Corner Resize Handle (Supports Mouse & Touch) */}
       <div
         onMouseDown={handleResizeStart}
+        onTouchStart={handleResizeStart}
         className="tile-resize-handle"
-        title="Click & Drag to resize width/height (Min: 1x1 Unit)"
+        title="Touch & Drag to resize width/height"
       >
         ◢
       </div>
@@ -275,6 +295,7 @@ export const TileCube: React.FC<TileCubeProps> = ({
           cursor: grab;
           transition: all 0.2s ease;
           user-select: none;
+          touch-action: none;
         }
         .tile-drag-handle:active {
           cursor: grabbing;
@@ -290,7 +311,8 @@ export const TileCube: React.FC<TileCubeProps> = ({
           color: var(--accent-orange);
           cursor: se-resize;
           user-select: none;
-          padding: 2px 4px;
+          touch-action: none;
+          padding: 4px 6px;
           transition: transform 0.2s ease;
         }
         .tile-resize-handle:hover {
