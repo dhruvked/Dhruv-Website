@@ -1,12 +1,45 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ASYMMETRICAL_GRID_TILES, type TileData } from '../data/portfolioData';
 import { TileCube } from './TileCube';
 import { GridBuilderStudio } from './GridBuilderStudio';
 
+const STORAGE_KEY = 'dhruv_portfolio_grid_layout_v1';
+
 export const MonolithicGrid: React.FC = () => {
-  const [tiles, setTiles] = useState<TileData[]>(ASYMMETRICAL_GRID_TILES);
+  // Load layout state from LocalStorage or default to ASYMMETRICAL_GRID_TILES
+  const [tiles, setTiles] = useState<TileData[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load saved layout from localStorage', e);
+    }
+    return ASYMMETRICAL_GRID_TILES;
+  });
+
   const [selectedTileId, setSelectedTileId] = useState<string | null>('hero-split-bio');
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  // Auto-save any layout edits to LocalStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tiles));
+    } catch (e) {
+      console.warn('Failed to save layout to localStorage', e);
+    }
+  }, [tiles]);
+
+  const handleResetLayout = () => {
+    setTiles(ASYMMETRICAL_GRID_TILES);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {}
+  };
 
   const handleAddTile = () => {
     const newId = `custom-tile-${Date.now().toString().slice(-4)}`;
@@ -137,6 +170,7 @@ export const MonolithicGrid: React.FC = () => {
         onAddTile={handleAddTile}
         onUpdateTile={handleUpdateTile}
         onDeleteTile={handleDeleteTile}
+        onResetLayout={handleResetLayout}
       />
 
       {/* 12-Row Page Snap Container */}

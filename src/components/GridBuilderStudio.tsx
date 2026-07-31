@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Copy, Check, Sliders, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Plus, Trash2, Copy, Check, Sliders, ChevronRight, ChevronLeft, RotateCcw } from 'lucide-react';
 import type { TileData } from '../data/portfolioData';
 
 interface GridBuilderStudioProps {
@@ -9,6 +9,7 @@ interface GridBuilderStudioProps {
   onAddTile: () => void;
   onUpdateTile: (id: string, updatedTile: Partial<TileData>) => void;
   onDeleteTile: (id: string) => void;
+  onResetLayout: () => void;
 }
 
 export const GridBuilderStudio: React.FC<GridBuilderStudioProps> = ({
@@ -17,7 +18,8 @@ export const GridBuilderStudio: React.FC<GridBuilderStudioProps> = ({
   onSelectTile,
   onAddTile,
   onUpdateTile,
-  onDeleteTile
+  onDeleteTile,
+  onResetLayout
 }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -85,33 +87,49 @@ export const GridBuilderStudio: React.FC<GridBuilderStudioProps> = ({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-hairline)', paddingBottom: '0.65rem' }}>
-            <h3 style={{ fontSize: '0.95rem', color: '#ffffff', fontFamily: 'var(--font-heading)' }}>
-              DRAG & RESIZE STUDIO (12×12)
-            </h3>
+            <div>
+              <h3 style={{ fontSize: '0.95rem', color: '#ffffff', fontFamily: 'var(--font-heading)' }}>
+                TILE BUILDER STUDIO
+              </h3>
+              <span style={{ fontSize: '0.68rem', color: '#10b981', fontFamily: 'var(--font-mono)' }}>
+                ● EDITS AUTO-SAVED
+              </span>
+            </div>
+
             <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
               {tiles.length} TILES
             </span>
           </div>
 
           {/* Quick Action Buttons */}
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.4rem' }}>
             <button
               onClick={onAddTile}
               className="btn btn-primary"
-              style={{ flex: 1, fontSize: '0.76rem', padding: '0.45rem', justifyContent: 'center' }}
+              style={{ flex: 1, fontSize: '0.74rem', padding: '0.4rem', justifyContent: 'center' }}
             >
-              <Plus size={14} />
-              <span>Add New Tile</span>
+              <Plus size={13} />
+              <span>Add Tile</span>
             </button>
 
             <button
               onClick={handleExportJSON}
               className="btn btn-outline"
-              style={{ fontSize: '0.76rem', padding: '0.45rem', borderColor: 'var(--border-hairline)' }}
+              style={{ fontSize: '0.74rem', padding: '0.4rem', borderColor: 'var(--border-hairline)' }}
               title="Copy JSON Layout to Clipboard"
             >
-              {copied ? <Check size={14} style={{ color: '#10b981' }} /> : <Copy size={14} />}
+              {copied ? <Check size={13} style={{ color: '#10b981' }} /> : <Copy size={13} />}
               <span>{copied ? 'Copied!' : 'Export'}</span>
+            </button>
+
+            <button
+              onClick={onResetLayout}
+              className="btn btn-outline"
+              style={{ fontSize: '0.74rem', padding: '0.4rem', borderColor: 'var(--border-hairline)', color: '#ef4444' }}
+              title="Reset Layout to Default"
+            >
+              <RotateCcw size={13} />
+              <span>Reset</span>
             </button>
           </div>
 
