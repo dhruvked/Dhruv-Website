@@ -26,7 +26,7 @@ export interface TechStackDomain {
 export interface SocialLinks {
   github: string;
   linkedin: string;
-  twitter: string;
+  phone: string;
   email: string;
 }
 
@@ -145,8 +145,8 @@ export const INITIAL_CONTENT: PortfolioContentModel = {
   socials: {
     github: 'https://github.com/dhruvked',
     linkedin: 'https://linkedin.com/in/dhruvkedia',
-    twitter: 'https://twitter.com/dhruvkedia',
-    email: 'dhruvkedia@example.com'
+    phone: '+91 9876543210',
+    email: 'dhruvkedaria@gmail.com'
   }
 };
 

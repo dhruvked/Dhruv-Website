@@ -350,7 +350,7 @@ export const TileCube: React.FC<TileCubeProps> = ({
   if (tile.id === 'social-connect') {
     return (
       <div
-        className={`cube-wrapper ${isSelected ? 'selected-tile-active' : ''}`}
+        className={`cube-wrapper cube-wrapper-social-connect ${isSelected ? 'selected-tile-active' : ''}`}
         onClick={handleTileClick}
         style={{
           gridColumnStart: colStart || 'auto',

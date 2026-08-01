@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check } from 'lucide-react';
+import { Check, Phone } from 'lucide-react';
 import { ContentStore, type SocialLinks } from '../data/contentStore';
 
 interface SocialConnectTileProps {
@@ -40,14 +40,10 @@ export const SocialConnectTile: React.FC<SocialConnectTileProps> = ({ accentColo
       )
     },
     {
-      id: 'twitter',
-      name: 'X / Twitter',
-      url: socials.twitter,
-      svgPath: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-        </svg>
-      )
+      id: 'phone',
+      name: 'Phone',
+      url: socials.phone || '+91 9876543210',
+      svgPath: <Phone size={22} />
     },
     {
       id: 'email',
@@ -64,12 +60,20 @@ export const SocialConnectTile: React.FC<SocialConnectTileProps> = ({ accentColo
 
   const handleLinkClick = (e: React.MouseEvent, item: typeof links[0]) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(item.url);
+
+    // Copy to clipboard (phone number or link)
+    const copyValue = item.id === 'phone' ? item.url : item.id === 'email' ? socials.email : item.url;
+    navigator.clipboard.writeText(copyValue);
+
     setCopiedId(item.id);
-    window.open(item.url, '_blank');
+
+    if (item.id !== 'phone') {
+      window.open(item.url, '_blank');
+    }
+
     setTimeout(() => {
       setCopiedId(null);
-    }, 1800);
+    }, 2000);
   };
 
   return (
@@ -96,11 +100,11 @@ export const SocialConnectTile: React.FC<SocialConnectTileProps> = ({ accentColo
         return (
           <motion.div
             key={item.id}
-            whileHover={{ scale: 1.2, color: accentColor }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.25, color: accentColor }}
+            whileTap={{ scale: 0.85 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
             onClick={(e) => handleLinkClick(e, item)}
-            title={item.name}
+            title={item.id === 'phone' ? `Copy Phone (${item.url})` : item.name}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -116,9 +120,10 @@ export const SocialConnectTile: React.FC<SocialConnectTileProps> = ({ accentColo
               {isCopied ? (
                 <motion.div
                   key="copied"
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.5, opacity: 0 }}
+                  initial={{ scale: 0.2, rotate: -45, opacity: 0 }}
+                  animate={{ scale: 1.15, rotate: 0, opacity: 1 }}
+                  exit={{ scale: 0.2, rotate: 45, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 450, damping: 22 }}
                   style={{ color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                   <Check size={22} />
@@ -126,6 +131,10 @@ export const SocialConnectTile: React.FC<SocialConnectTileProps> = ({ accentColo
               ) : (
                 <motion.div
                   key="icon"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                   {item.svgPath}

@@ -18,8 +18,9 @@
   --font-clash: 'Clash Display', sans-serif;
   --font-satoshi: 'Satoshi', sans-serif;
 
-  --grid-unit-min-width: 70px;
-  --grid-unit-min-height: 50px;
+  /* Increased Grid Unit Cell Min Dimensions to prevent squeezing */
+  --grid-unit-min-width: 85px;  /* 4-col tile = min 340px width */
+  --grid-unit-min-height: 62px; /* 4-row tile = min 248px height */
 
   --transition-3d: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -28,6 +29,11 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* Prevents blue text selection highlight on tap/click */
+  user-select: none;
+  -webkit-user-select: none;
+  /* Removes default blue/gray touch flash box on mobile */
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body, #root, .app-root-wrapper {
@@ -40,6 +46,10 @@ html, body, #root, .app-root-wrapper {
   color: #ffffff;
   font-family: var(--font-satoshi);
   -webkit-font-smoothing: antialiased;
+  /* Prevents blue text selection highlight on tap/click */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Allow scrolling when Admin route is active */
@@ -63,6 +73,11 @@ body.admin-mode-active,
   height: 100vh;
 }
 
+/* Embedded Mobile Social Dock (Hidden on Desktop >= 1024px) */
+.hero-mobile-socials {
+  display: none;
+}
+
 /* Universal Page Snap Container */
 .page-snap-container {
   width: 100vw;
@@ -75,8 +90,8 @@ body.admin-mode-active,
   -webkit-overflow-scrolling: touch;
 }
 
-/* DESKTOP & LAPTOP & TABLET (min-width: 681px): 100vh Page Frame Snap */
-@media (min-width: 681px) {
+/* DESKTOP & LARGE LAPTOPS (min-width: 1024px): 12x12 Monolithic Grid Frame Snap */
+@media (min-width: 1024px) {
   .grid-12row-page {
     width: 100vw;
     height: 100vh !important;
@@ -96,7 +111,7 @@ body.admin-mode-active,
     grid-template-rows: repeat(12, minmax(var(--grid-unit-min-height), 1fr));
     grid-auto-flow: dense;
     width: 100%;
-    max-width: 1360px;
+    max-width: 1400px;
     height: 100vh;
     border-left: 1px solid var(--border-hairline);
     border-right: 1px solid var(--border-hairline);
@@ -124,14 +139,40 @@ body.admin-mode-active,
   }
 }
 
-/* MOBILE NARROW VIEW (< 680px): 1 Tile Per 100dvh Frame View Restored */
-@media (max-width: 680px) {
+/* TABLETS & MOBILE NARROW VIEW (< 1024px): Embedded Hero Socials + Resume Button at Bottom */
+@media (max-width: 1023px) {
   html, body, #root, .app-root-wrapper, .page-snap-container {
     height: 100% !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     scroll-snap-type: y mandatory !important;
     scroll-behavior: smooth !important;
+  }
+
+  .hero-mobile-socials {
+    display: flex !important;
+    gap: 1.6rem !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 1.5rem !important;
+  }
+
+  /* Electric Orange Accent Glow is the DEFAULT STATE on Mobile */
+  .hero-mobile-socials .social-logo-glow-item {
+    color: var(--accent-orange) !important;
+    filter: drop-shadow(0 0 8px var(--accent-orange)) drop-shadow(0 0 16px var(--accent-orange)) !important;
+  }
+
+  /* Reposition Hero Resume Button to Bottom of Screen on Mobile */
+  .hero-resume-btn {
+    top: auto !important;
+    bottom: 2rem !important;
+    right: 50% !important;
+    transform: translateX(50%) !important;
+  }
+
+  .cube-wrapper-social-connect {
+    display: none !important;
   }
 
   .grid-12row-page {

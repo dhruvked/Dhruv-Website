@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ExternalLink, RotateCw, Layers } from 'lucide-react';
+import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
+import { ExternalLink, RotateCw, GitBranch } from 'lucide-react';
 import { ContentStore, type ProjectItem } from '../data/contentStore';
 
 interface ProjectsTileProps {
@@ -8,25 +8,55 @@ interface ProjectsTileProps {
 }
 
 export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b00' }) => {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
   const [projectsList, setProjectsList] = useState<ProjectItem[]>(() => ContentStore.getContent().projects);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
+  // Sync content from ContentStore
   useEffect(() => {
     setProjectsList(ContentStore.getContent().projects);
   }, []);
 
-  const activeProject = projectsList[selectedIndex] || projectsList[0];
+  // ROTATES EVERY 4 SECONDS WHEN NOT HOVERED, NOT DRAGGING, & NOT FLIPPED
+  useEffect(() => {
+    if (isHovered || isDragging || isFlipped || projectsList.length <= 1) return;
 
-  const handleTabClick = (index: number, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelectedIndex(index);
-    setIsFlipped(false);
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % projectsList.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isHovered, isDragging, isFlipped, projectsList.length]);
+
+  const activeProject = projectsList[currentIndex] || projectsList[0];
+
+  const handleTileClick = () => {
+    // Only flip if the user clicked without dragging
+    if (!isDragging) {
+      setIsFlipped((prev) => !prev);
+    }
   };
 
-  const handleFlipClick = (e: React.MouseEvent) => {
+  const handleDragEnd = (_e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const swipeThreshold = 35;
+    const velocityThreshold = 200;
+
+    if (info.offset.x < -swipeThreshold || info.velocity.x < -velocityThreshold) {
+      // Swiped Left -> Next Project
+      setCurrentIndex((prev) => (prev + 1) % projectsList.length);
+    } else if (info.offset.x > swipeThreshold || info.velocity.x > velocityThreshold) {
+      // Swiped Right -> Previous Project
+      setCurrentIndex((prev) => (prev - 1 + projectsList.length) % projectsList.length);
+    }
+
+    setTimeout(() => setIsDragging(false), 50);
+  };
+
+  const handleDotClick = (index: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsFlipped(!isFlipped);
+    setCurrentIndex(index);
   };
 
   if (!activeProject) return null;
@@ -34,8 +64,16 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
   return (
     <div
       className="projects-tile-container"
-      onClick={() => setIsFlipped(!isFlipped)}
-      style={{ width: '100%', height: '100%', position: 'relative', perspective: '1200px', cursor: 'pointer' }}
+      onClick={handleTileClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+        perspective: '1200px',
+        cursor: isDragging ? 'grabbing' : 'grab'
+      }}
     >
       <motion.div
         animate={{ rotateY: isFlipped ? 180 : 0 }}
@@ -47,7 +85,7 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
           transformStyle: 'preserve-3d'
         }}
       >
-        {/* FRONT FACE: SINGLE PROJECT SPOTLIGHT & SWITCHER */}
+        {/* FRONT FACE: SWIPEABLE / DRAGGABLE MINIMALIST CAROUSEL */}
         <div
           className="cube-face cube-face-front"
           style={{
@@ -59,135 +97,147 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
             WebkitBackfaceVisibility: 'hidden',
             border: 'none',
             borderRadius: '8px',
-            padding: '1.1rem 1.2rem',
+            padding: '1.4rem 1.6rem 1rem 1.6rem',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
             background: '#07090e',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            userSelect: 'none'
           }}
         >
-          {/* Top Minimal Project Switcher Bar */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-              paddingBottom: '0.6rem'
-            }}
-          >
+          {/* Top Minimalist Tag */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-              <Layers size={13} style={{ color: accentColor }} />
-              <span style={{ fontSize: '0.8rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 700, letterSpacing: '0.04em' }}>
-                FEATURED PROJECTS
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: accentColor }} />
+              <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: accentColor, fontWeight: 700, letterSpacing: '0.08em' }}>
+                PROJECT {String(currentIndex + 1).padStart(2, '0')} // {String(projectsList.length).padStart(2, '0')}
               </span>
-            </div>
-
-            {/* Switcher Tabs */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              {projectsList.map((proj, idx) => {
-                const isActive = idx === selectedIndex;
-                return (
-                  <button
-                    key={proj.id}
-                    onClick={(e) => handleTabClick(idx, e)}
-                    style={{
-                      background: isActive ? 'rgba(255, 107, 0, 0.15)' : 'transparent',
-                      border: `1px solid ${isActive ? accentColor : 'rgba(255, 255, 255, 0.08)'}`,
-                      borderRadius: '4px',
-                      padding: '0.2rem 0.55rem',
-                      color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.5)',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.62rem',
-                      fontWeight: isActive ? 700 : 400,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    {proj.tag}
-                  </button>
-                );
-              })}
             </div>
           </div>
 
-          {/* SPOTLIGHT PROJECT CONTENT */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.85rem', margin: '0.5rem 0' }}>
-            <div>
-              <div style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: accentColor, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '0.25rem' }}>
-                {activeProject.tagline}
-              </div>
-              <h2 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 700, letterSpacing: '0.02em', marginBottom: '0.4rem' }}>
-                {activeProject.title}
-              </h2>
-              <p style={{ fontSize: '0.82rem', color: 'rgba(255, 255, 255, 0.78)', fontFamily: 'var(--font-satoshi)', lineHeight: 1.5, maxWidth: '95%' }}>
-                {activeProject.description}
-              </p>
-            </div>
-
-            {/* Tech Badges */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-              {activeProject.techPills.map((t, idx) => (
+          {/* MAIN CAROUSEL SLIDE CONTENT WITH FRAMER MOTION DRAG & TOUCHPAD GESTURES */}
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeProject.id}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragStart={() => setIsDragging(true)}
+                onDragEnd={handleDragEnd}
+                initial={{ opacity: 0, x: 30, filter: 'blur(4px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, x: -30, filter: 'blur(4px)' }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.65rem',
+                  cursor: isDragging ? 'grabbing' : 'grab',
+                  touchAction: 'pan-y'
+                }}
+              >
                 <span
-                  key={idx}
                   style={{
                     fontSize: '0.68rem',
                     fontFamily: 'var(--font-mono)',
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    color: 'rgba(255, 255, 255, 0.85)',
-                    padding: '0.2rem 0.6rem',
-                    borderRadius: '3px'
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase'
                   }}
                 >
-                  {t}
+                  {activeProject.tagline || activeProject.tag}
                 </span>
-              ))}
-            </div>
+
+                <h2
+                  style={{
+                    fontSize: '2rem',
+                    fontFamily: 'var(--font-clash)',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    margin: 0,
+                    lineHeight: 1.1,
+                    letterSpacing: '-0.01em'
+                  }}
+                >
+                  {activeProject.title}
+                </h2>
+
+                <p
+                  style={{
+                    fontSize: '0.84rem',
+                    fontFamily: 'var(--font-satoshi)',
+                    color: 'rgba(255, 255, 255, 0.75)',
+                    lineHeight: 1.5,
+                    margin: 0,
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {activeProject.description}
+                </p>
+
+                {/* Tech Pills Row */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.2rem' }}>
+                  {activeProject.techPills.slice(0, 4).map((tech, idx) => (
+                    <span
+                      key={idx}
+                      style={{
+                        fontSize: '0.64rem',
+                        fontFamily: 'var(--font-mono)',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        color: 'rgba(255, 255, 255, 0.8)',
+                        padding: '0.15rem 0.5rem',
+                        borderRadius: '3px'
+                      }}
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
 
-          {/* Action Row */}
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.5)' }}>
-              ● {activeProject.tagline}
-            </span>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (activeProject.codeUrl) window.open(activeProject.codeUrl, '_blank');
-                }}
-                className="btn"
-                style={{ fontSize: '0.65rem', padding: '0.25rem 0.65rem', gap: '0.3rem', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#ffffff' }}
-              >
-                <span>Code</span>
-                <ExternalLink size={11} />
-              </button>
-
-              <button
-                onClick={handleFlipClick}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: accentColor,
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.65rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.3rem'
-                }}
-              >
-                <span>Specs</span>
-                <RotateCw size={11} />
-              </button>
+          {/* Bottom Minimalist Carousel Dots & Subtext */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.5rem' }}>
+            {/* Dots Switcher */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              {projectsList.map((p, idx) => {
+                const isActive = idx === currentIndex;
+                return (
+                  <motion.button
+                    key={p.id}
+                    onClick={(e) => handleDotClick(idx, e)}
+                    animate={{
+                      width: isActive ? '20px' : '6px',
+                      backgroundColor: isActive ? accentColor : 'rgba(255, 255, 255, 0.2)'
+                    }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    style={{
+                      height: '6px',
+                      borderRadius: '3px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 0
+                    }}
+                  />
+                );
+              })}
             </div>
+
+            <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.4)' }}>
+              swipe or click to view specs ↗
+            </span>
           </div>
         </div>
 
-        {/* BACK FACE: SYSTEM ARCHITECTURE & HIGHLIGHTS */}
+        {/* BACK FACE: FULL DETAILED PROJECT DESCRIPTION & REPO LINK */}
         <div
           className="cube-face cube-face-side"
           style={{
@@ -200,7 +250,7 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
             WebkitBackfaceVisibility: 'hidden',
             border: 'none',
             borderRadius: '8px',
-            padding: '1.2rem',
+            padding: '1.4rem',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
@@ -211,45 +261,71 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
           {/* Header Bar */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', paddingBottom: '0.6rem' }}>
             <div>
-              <div style={{ fontSize: '0.6rem', fontFamily: 'var(--font-mono)', color: accentColor, fontWeight: 700 }}>
-                SYSTEM ARCHITECTURE SPECS
-              </div>
-              <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.6rem', fontFamily: 'var(--font-mono)', color: accentColor, fontWeight: 700, textTransform: 'uppercase' }}>
+                {activeProject.tagline || 'PROJECT SPECS'}
+              </span>
+              <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 700, margin: '0.1rem 0 0 0' }}>
                 {activeProject.title}
               </h3>
             </div>
-            <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.5)' }}>
-              [{activeProject.tag}]
-            </span>
-          </div>
 
-          {/* Highlights List */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.6rem', margin: '0.5rem 0' }}>
-            {activeProject.specs.map((detail, idx) => (
-              <div
-                key={idx}
+            {activeProject.codeUrl && (
+              <a
+                href={activeProject.codeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
                 style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '0.5rem',
-                  fontSize: '0.78rem',
-                  fontFamily: 'var(--font-satoshi)',
-                  color: 'rgba(255, 255, 255, 0.85)',
-                  lineHeight: 1.45
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  fontSize: '0.72rem',
+                  fontFamily: 'var(--font-mono)',
+                  color: accentColor,
+                  background: 'rgba(255, 107, 0, 0.1)',
+                  border: `1px solid ${accentColor}`,
+                  padding: '0.3rem 0.65rem',
+                  borderRadius: '4px',
+                  textDecoration: 'none',
+                  fontWeight: 700
                 }}
               >
-                <span style={{ color: accentColor, fontFamily: 'var(--font-mono)', fontSize: '0.7rem', marginTop: '0.1rem' }}>
-                  0{idx + 1}.
-                </span>
-                <span>{detail}</span>
-              </div>
-            ))}
+                <GitBranch size={12} />
+                <span>CODE</span>
+                <ExternalLink size={10} />
+              </a>
+            )}
           </div>
 
-          {/* Footer Back Instruction Bar */}
+          {/* Full Description & Specs List */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.75rem', margin: '0.5rem 0' }}>
+            <p style={{ fontSize: '0.82rem', fontFamily: 'var(--font-satoshi)', color: 'rgba(255, 255, 255, 0.9)', lineHeight: 1.5, margin: 0 }}>
+              {activeProject.description}
+            </p>
+
+            {/* Architecture Highlights */}
+            {activeProject.specs && activeProject.specs.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                <span style={{ fontSize: '0.6rem', fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase' }}>
+                  KEY INNOVATIONS:
+                </span>
+                {activeProject.specs.map((spec, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.45rem', fontSize: '0.76rem', color: 'rgba(255,255,255,0.8)', fontFamily: 'var(--font-satoshi)' }}>
+                    <span style={{ color: accentColor, fontFamily: 'var(--font-mono)', fontSize: '0.68rem', marginTop: '0.1rem' }}>
+                      0{idx + 1}.
+                    </span>
+                    <span>{spec}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer Return Notice */}
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.4rem', textAlign: 'center' }}>
-            <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: accentColor }}>
-              CLICK ANYWHERE TO RETURN TO SPOTLIGHT ↺
+            <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: accentColor, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+              <RotateCw size={10} />
+              <span>CLICK ANYWHERE TO RETURN TO CAROUSEL</span>
             </span>
           </div>
         </div>

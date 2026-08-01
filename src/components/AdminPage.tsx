@@ -618,12 +618,13 @@ export const AdminPage: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              <label style={labelStyle}>TWITTER / X URL</label>
+              <label style={labelStyle}>PHONE NUMBER (COPIED ON TAP)</label>
               <input
                 type="text"
-                value={content.socials.twitter}
-                onChange={(e) => setContent({ ...content, socials: { ...content.socials, twitter: e.target.value } })}
+                value={content.socials.phone || ''}
+                onChange={(e) => setContent({ ...content, socials: { ...content.socials, phone: e.target.value } })}
                 style={inputStyle}
+                placeholder="+91 9876543210"
               />
             </div>
 
