@@ -3,16 +3,21 @@ import { ASYMMETRICAL_GRID_TILES, type TileData } from '../data/portfolioData';
 import { TileCube } from './TileCube';
 import { GridBuilderStudio } from './GridBuilderStudio';
 
-const STORAGE_KEY = 'dhruv_portfolio_grid_layout_v1';
+const STORAGE_KEY = 'dhruv_portfolio_grid_layout_v4';
 
 export const MonolithicGrid: React.FC = () => {
-  // Load layout state from LocalStorage or default to ASYMMETRICAL_GRID_TILES
+  // Load tile layout state from LocalStorage or default to ASYMMETRICAL_GRID_TILES
   const [tiles, setTiles] = useState<TileData[]>(() => {
     try {
+      // Clear legacy storage keys to ensure fresh render of Hero + Timeline
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v1');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v2');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v3');
+
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed) && parsed.length >= 2) {
           return parsed;
         }
       }
@@ -25,7 +30,7 @@ export const MonolithicGrid: React.FC = () => {
   const [selectedTileId, setSelectedTileId] = useState<string | null>('hero-split-bio');
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // Auto-save any layout edits to LocalStorage
+  // Auto-save tile layout state
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tiles));
@@ -38,6 +43,9 @@ export const MonolithicGrid: React.FC = () => {
     setTiles(ASYMMETRICAL_GRID_TILES);
     try {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v1');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v2');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v3');
     } catch (e) {}
   };
 
@@ -69,7 +77,6 @@ export const MonolithicGrid: React.FC = () => {
     );
   };
 
-  // 2D Collision Prevention Engine: Prevent two tiles from occupying overlapping grid cells
   const checkCollision = (targetId: string, candidateSpan: { colStart?: number; rowStart?: number; colSpan: number; rowSpan: number }) => {
     const colStart = candidateSpan.colStart || 1;
     const colEnd = colStart + candidateSpan.colSpan;

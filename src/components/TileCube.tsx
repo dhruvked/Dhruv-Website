@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, GripVertical } from 'lucide-react';
 import type { TileData } from '../data/portfolioData';
+import { HeroTile } from './HeroTile';
+import { CareerTimelineTile } from './CareerTimelineTile';
 
 interface TileCubeProps {
   tile: TileData;
@@ -142,6 +144,186 @@ export const TileCube: React.FC<TileCubeProps> = ({
     window.addEventListener('touchend', handleEnd);
   };
 
+  // Dedicated Hero Tile Renderer
+  if (tile.id === 'hero-split-bio') {
+    return (
+      <div
+        className={`cube-wrapper ${isSelected ? 'selected-tile-active' : ''}`}
+        onClick={handleTileClick}
+        style={{
+          gridColumnStart: colStart || 'auto',
+          gridColumnEnd: `span ${colSpan}`,
+          gridRowStart: rowStart || 'auto',
+          gridRowEnd: `span ${rowSpan}`,
+          cursor: 'pointer'
+        }}
+      >
+        {/* Top Visual Drag Handle */}
+        <div
+          onMouseDown={handleDragStart}
+          onTouchStart={handleDragStart}
+          className="tile-drag-handle"
+          title="Touch & Drag to reposition tile"
+        >
+          <GripVertical size={13} style={{ color: accentColor }} />
+          <span>DRAG TILE</span>
+        </div>
+
+        <HeroTile accentColor={accentColor} />
+
+        {/* Bottom-Right Corner Resize Handle */}
+        <div
+          onMouseDown={handleResizeStart}
+          onTouchStart={handleResizeStart}
+          className="tile-resize-handle"
+          title="Touch & Drag to resize width/height"
+        >
+          ◢
+        </div>
+
+        <style>{`
+          .tile-drag-handle {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(8, 10, 15, 0.85);
+            border: 1px solid var(--border-hairline);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            cursor: grab;
+            transition: all 0.2s ease;
+            user-select: none;
+            touch-action: none;
+          }
+          .tile-drag-handle:active {
+            cursor: grabbing;
+            border-color: var(--accent-orange);
+            background: rgba(255, 107, 0, 0.2);
+          }
+          .tile-resize-handle {
+            position: absolute;
+            bottom: 3px;
+            right: 4px;
+            z-index: 80;
+            font-size: 0.8rem;
+            color: var(--accent-orange);
+            cursor: se-resize;
+            user-select: none;
+            touch-action: none;
+            padding: 4px 6px;
+            transition: transform 0.2s ease;
+          }
+          .tile-resize-handle:hover {
+            transform: scale(1.3);
+            color: var(--accent-orange-bright);
+          }
+          .selected-tile-active {
+            border-color: var(--accent-orange) !important;
+            box-shadow: inset 0 0 20px rgba(255, 107, 0, 0.15), 0 0 25px rgba(255, 107, 0, 0.3) !important;
+            z-index: 50;
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Dedicated Career Timeline Renderer
+  if (tile.id === 'career-timeline') {
+    return (
+      <div
+        className={`cube-wrapper ${isSelected ? 'selected-tile-active' : ''}`}
+        onClick={handleTileClick}
+        style={{
+          gridColumnStart: colStart || 'auto',
+          gridColumnEnd: `span ${colSpan}`,
+          gridRowStart: rowStart || 'auto',
+          gridRowEnd: `span ${rowSpan}`,
+          cursor: 'pointer'
+        }}
+      >
+        {/* Top Visual Drag Handle */}
+        <div
+          onMouseDown={handleDragStart}
+          onTouchStart={handleDragStart}
+          className="tile-drag-handle"
+          title="Touch & Drag to reposition tile"
+        >
+          <GripVertical size={13} style={{ color: accentColor }} />
+          <span>DRAG TILE</span>
+        </div>
+
+        <CareerTimelineTile accentColor={accentColor} />
+
+        {/* Bottom-Right Corner Resize Handle */}
+        <div
+          onMouseDown={handleResizeStart}
+          onTouchStart={handleResizeStart}
+          className="tile-resize-handle"
+          title="Touch & Drag to resize width/height"
+        >
+          ◢
+        </div>
+
+        <style>{`
+          .tile-drag-handle {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(8, 10, 15, 0.85);
+            border: 1px solid var(--border-hairline);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            cursor: grab;
+            transition: all 0.2s ease;
+            user-select: none;
+            touch-action: none;
+          }
+          .tile-drag-handle:active {
+            cursor: grabbing;
+            border-color: var(--accent-orange);
+            background: rgba(255, 107, 0, 0.2);
+          }
+          .tile-resize-handle {
+            position: absolute;
+            bottom: 3px;
+            right: 4px;
+            z-index: 80;
+            font-size: 0.8rem;
+            color: var(--accent-orange);
+            cursor: se-resize;
+            user-select: none;
+            touch-action: none;
+            padding: 4px 6px;
+            transition: transform 0.2s ease;
+          }
+          .tile-resize-handle:hover {
+            transform: scale(1.3);
+            color: var(--accent-orange-bright);
+          }
+          .selected-tile-active {
+            border-color: var(--accent-orange) !important;
+            box-shadow: inset 0 0 20px rgba(255, 107, 0, 0.15), 0 0 25px rgba(255, 107, 0, 0.3) !important;
+            z-index: 50;
+          }
+        `}</style>
+      </div>
+    );
+  }
+
   // Blank Negative Space Tile
   if (tile.isBlank) {
     return (
@@ -179,7 +361,7 @@ export const TileCube: React.FC<TileCubeProps> = ({
         cursor: 'pointer'
       }}
     >
-      {/* Top Visual Drag Handle (Supports Mouse & Touch) */}
+      {/* Top Visual Drag Handle */}
       <div
         onMouseDown={handleDragStart}
         onTouchStart={handleDragStart}
@@ -199,14 +381,18 @@ export const TileCube: React.FC<TileCubeProps> = ({
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            paddingTop: '2rem'
+            padding: '2.2rem 1.25rem 1.25rem 1.25rem',
+            position: 'relative',
+            overflow: 'hidden'
           }}
         >
-          {tile.front?.subtitle && (
-            <span className="tech-badge" style={{ color: accentColor, borderColor: `${accentColor}40`, alignSelf: 'flex-start' }}>
-              {tile.front.subtitle}
-            </span>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.4rem' }}>
+            {tile.front?.subtitle && (
+              <span className="tech-badge" style={{ color: accentColor, borderColor: `${accentColor}40` }}>
+                {tile.front.subtitle}
+              </span>
+            )}
+          </div>
 
           <div style={{ margin: 'auto 0' }}>
             <h2 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-heading)', color: '#ffffff', letterSpacing: '0.02em', marginBottom: '0.2rem' }}>
@@ -231,42 +417,69 @@ export const TileCube: React.FC<TileCubeProps> = ({
           </div>
         </div>
 
-        {/* Side Face */}
-        <div className="cube-face cube-face-side" style={{ borderTop: `2px solid ${accentColor}`, paddingTop: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-            <span style={{ fontSize: '0.9rem', fontFamily: 'var(--font-heading)', color: accentColor }}>
-              {tile.side?.title || `${tile.front?.title || tile.id} (Side)`}
-            </span>
+        {/* Side/Back Face */}
+        <div
+          className="cube-face cube-face-side"
+          style={{
+            borderTop: `3px solid ${accentColor}`,
+            padding: '2.2rem 1.5rem 1.5rem 1.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            background: '#07090e'
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '0.85rem' }}>
+              <div>
+                <span style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: accentColor, letterSpacing: '0.08em' }}>
+                  {tile.side?.subtitle || 'ENGINEERING ARCHITECTURE'}
+                </span>
+                <h2 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-heading)', color: '#ffffff', fontWeight: 800, margin: '0.1rem 0' }}>
+                  {tile.side?.title || `${tile.front?.title || tile.id}`}
+                </h2>
+              </div>
 
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsRotated(false);
-              }}
-              className="back-btn-side"
-              style={{
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid var(--border-hairline)',
-                color: 'var(--text-primary)',
-                fontSize: '0.74rem',
-                fontFamily: 'var(--font-mono)',
-                padding: '0.22rem 0.65rem',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.3rem',
-                transition: 'all 0.25s ease'
-              }}
-            >
-              <ArrowLeft size={12} style={{ color: accentColor }} />
-              <span>Back</span>
-            </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsRotated(false);
+                }}
+                className="back-btn-side"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid var(--border-hairline)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.74rem',
+                  fontFamily: 'var(--font-mono)',
+                  padding: '0.3rem 0.75rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  transition: 'all 0.25s ease'
+                }}
+              >
+                <ArrowLeft size={13} style={{ color: accentColor }} />
+                <span>Back</span>
+              </button>
+            </div>
+
+            {tile.side?.details && (
+              <ul style={{ paddingLeft: '1.1rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                {tile.side.details.map((detail, idx) => (
+                  <li key={idx} style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                    {detail}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Bottom-Right Corner Resize Handle (Supports Mouse & Touch) */}
+      {/* Bottom-Right Corner Resize Handle */}
       <div
         onMouseDown={handleResizeStart}
         onTouchStart={handleResizeStart}

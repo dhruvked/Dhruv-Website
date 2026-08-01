@@ -15,6 +15,8 @@
   --font-heading: 'Outfit', sans-serif;
   --font-body: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --font-clash: 'Clash Display', sans-serif;
+  --font-satoshi: 'Satoshi', sans-serif;
 
   --grid-unit-min-width: 70px;
   --grid-unit-min-height: 50px;
@@ -36,7 +38,7 @@ html, body, #root, .app-root-wrapper {
   overflow: hidden !important;
   background-color: var(--bg-dark);
   color: #ffffff;
-  font-family: var(--font-body);
+  font-family: var(--font-satoshi);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -222,7 +224,7 @@ html, body, #root, .app-root-wrapper {
   gap: 0.4rem;
   padding: 0.4rem 0.9rem;
   border-radius: 4px;
-  font-family: var(--font-heading);
+  font-family: var(--font-satoshi);
   font-weight: 600;
   font-size: 0.8rem;
   cursor: pointer;

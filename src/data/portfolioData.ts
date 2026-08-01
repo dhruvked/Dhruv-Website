@@ -17,6 +17,11 @@ export interface TileData {
     tags?: string[];
     accentColor?: string;
     metrics?: string[];
+    availabilityStatus?: string;
+    tagline?: string;
+    photoUrl?: string;
+    ctaPrimary?: { label: string; url?: string };
+    ctaSecondary?: { label: string; url?: string };
   };
   side?: {
     title?: string;
@@ -30,56 +35,30 @@ export interface TileData {
 export const ASYMMETRICAL_GRID_TILES: TileData[] = [
   {
     id: 'hero-split-bio',
-    gridSpan: { colStart: 1, rowStart: 1, colSpan: 7, rowSpan: 6 },
+    gridSpan: { colStart: 1, rowStart: 1, colSpan: 7, rowSpan: 12 },
+    isRotating: true,
+    type: 'hero',
+    front: {
+      title: 'Dhruv Kedia',
+      photoUrl: '/src/assets/dhruv_portrait.jpg',
+      accentColor: '#ff6b00'
+    },
+    side: {
+      title: 'Dhruv Kedia',
+      subtitle: 'FULL-STACK & AI SYSTEMS ENGINEER',
+      details: [
+        'Architecting high-performance web platforms, scalable microservices, and autonomous AI architectures with a focus on speed and solid system design.'
+      ]
+    }
+  },
+  {
+    id: 'career-timeline',
+    gridSpan: { colStart: 8, rowStart: 1, colSpan: 5, rowSpan: 12 },
     isRotating: false,
+    type: 'timeline',
     front: {
-      title: 'Hero Tile 01',
-      subtitle: 'SECTION 01',
-      description: 'Primary hero content placeholder. Side-by-side with Tile 02 in Page 1.',
-      accentColor: '#ff6b00'
-    }
-  },
-  {
-    id: 'hero-split-skills',
-    gridSpan: { colStart: 8, rowStart: 1, colSpan: 5, rowSpan: 6 },
-    isRotating: false,
-    front: {
-      title: 'Skills Radar 02',
-      subtitle: 'CAPABILITIES',
-      description: 'Engineering skills list placeholder.',
-      accentColor: '#ff6b00'
-    }
-  },
-  {
-    id: 'feature-canvas-3d',
-    gridSpan: { colStart: 1, rowStart: 7, colSpan: 4, rowSpan: 6 },
-    isRotating: true,
-    front: {
-      title: 'Project Tile 03',
-      subtitle: 'FEATURE ALPHA',
-      description: 'Drag & resize tile visual handles.',
-      accentColor: '#ff6b00'
-    }
-  },
-  {
-    id: 'feature-project-alpha',
-    gridSpan: { colStart: 5, rowStart: 7, colSpan: 4, rowSpan: 6 },
-    isRotating: true,
-    front: {
-      title: 'Project Tile 04',
-      subtitle: 'FEATURE BETA',
-      description: 'Drag & resize tile visual handles.',
-      accentColor: '#ff6b00'
-    }
-  },
-  {
-    id: 'feature-project-beta',
-    gridSpan: { colStart: 9, rowStart: 7, colSpan: 4, rowSpan: 6 },
-    isRotating: true,
-    front: {
-      title: 'Project Tile 05',
-      subtitle: 'FEATURE GAMMA',
-      description: 'Drag & resize tile visual handles.',
+      title: 'Career Timeline',
+      subtitle: 'MILESTONES',
       accentColor: '#ff6b00'
     }
   }
