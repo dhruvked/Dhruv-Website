@@ -69,18 +69,18 @@ body.admin-mode-active,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
 }
 
-/* Embedded Mobile Social Dock (Hidden on Desktop >= 1024px) */
+/* Embedded Mobile Social Dock (Hidden on Desktop >= 1024px and height >= 800px) */
 .hero-mobile-socials {
   display: none;
 }
 
 /* Universal Page Snap Container */
 .page-snap-container {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   overflow-y: auto !important;
   overflow-x: hidden !important;
@@ -90,10 +90,10 @@ body.admin-mode-active,
   -webkit-overflow-scrolling: touch;
 }
 
-/* DESKTOP & LARGE LAPTOPS (min-width: 1024px): 12x12 Monolithic Grid Frame Snap */
-@media (min-width: 1024px) {
+/* DESKTOP & LARGE MONITORS (min-width: 1024px AND min-height: 800px): 12x12 Monolithic Grid Frame Snap */
+@media (min-width: 1024px) and (min-height: 800px) {
   .grid-12row-page {
-    width: 100vw;
+    width: 100%;
     height: 100vh !important;
     min-height: 100vh !important;
     max-height: 100vh !important;
@@ -139,10 +139,11 @@ body.admin-mode-active,
   }
 }
 
-/* TABLETS & MOBILE NARROW VIEW (< 1024px): Embedded Hero Socials + Resume Button at Bottom */
-@media (max-width: 1023px) {
+/* TABLETS, IPADS, MOBILE PHONES (< 1024px width OR < 800px height): Dynamic Viewport Height (100dvh) */
+@media (max-width: 1023px), (max-height: 799px) {
   html, body, #root, .app-root-wrapper, .page-snap-container {
-    height: 100% !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     scroll-snap-type: y mandatory !important;
@@ -157,13 +158,13 @@ body.admin-mode-active,
     margin-top: 1.5rem !important;
   }
 
-  /* Electric Orange Accent Glow is the DEFAULT STATE on Mobile */
+  /* Electric Orange Accent Glow is the DEFAULT STATE on Mobile/Tablet */
   .hero-mobile-socials .social-logo-glow-item {
     color: var(--accent-orange) !important;
     filter: drop-shadow(0 0 8px var(--accent-orange)) drop-shadow(0 0 16px var(--accent-orange)) !important;
   }
 
-  /* Reposition Hero Resume Button to Bottom of Screen on Mobile */
+  /* Reposition Hero Resume Button to Bottom of Screen on Mobile/Tablet */
   .hero-resume-btn {
     top: auto !important;
     bottom: 2rem !important;
@@ -176,7 +177,7 @@ body.admin-mode-active,
   }
 
   .grid-12row-page {
-    width: 100vw !important;
+    width: 100% !important;
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
@@ -186,7 +187,7 @@ body.admin-mode-active,
   .monolithic-12x12-matrix {
     display: flex !important;
     flex-direction: column !important;
-    width: 100vw !important;
+    width: 100% !important;
     height: auto !important;
     border: none !important;
     background: var(--bg-dark);
@@ -194,7 +195,7 @@ body.admin-mode-active,
 
   .cube-wrapper {
     position: relative;
-    width: 100vw !important;
+    width: 100% !important;
     height: 100dvh !important;
     min-height: 100dvh !important;
     max-height: 100dvh !important;
