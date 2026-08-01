@@ -3,7 +3,7 @@ import { ASYMMETRICAL_GRID_TILES, type TileData } from '../data/portfolioData';
 import { TileCube } from './TileCube';
 import { GridBuilderStudio } from './GridBuilderStudio';
 
-const STORAGE_KEY = 'dhruv_portfolio_grid_layout_v13';
+const STORAGE_KEY = 'dhruv_portfolio_grid_layout_v14';
 
 export const MonolithicGrid: React.FC = () => {
   const [tiles, setTiles] = useState<TileData[]>(() => {
@@ -20,6 +20,7 @@ export const MonolithicGrid: React.FC = () => {
       localStorage.removeItem('dhruv_portfolio_grid_layout_v10');
       localStorage.removeItem('dhruv_portfolio_grid_layout_v11');
       localStorage.removeItem('dhruv_portfolio_grid_layout_v12');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v13');
 
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -62,6 +63,7 @@ export const MonolithicGrid: React.FC = () => {
       localStorage.removeItem('dhruv_portfolio_grid_layout_v10');
       localStorage.removeItem('dhruv_portfolio_grid_layout_v11');
       localStorage.removeItem('dhruv_portfolio_grid_layout_v12');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v13');
     } catch (e) {}
   };
 

@@ -85,6 +85,17 @@ export const ASYMMETRICAL_GRID_TILES: TileData[] = [
     }
   },
   {
+    id: 'ping-signal',
+    gridSpan: { colStart: 1, rowStart: 5, colSpan: 4, rowSpan: 2 },
+    isRotating: false,
+    type: 'ping',
+    front: {
+      title: 'Quick Ping',
+      subtitle: 'SIGNAL',
+      accentColor: '#ff6b00'
+    }
+  },
+  {
     id: 'terminal-sandbox',
     gridSpan: { colStart: 5, rowStart: 1, colSpan: 6, rowSpan: 6 },
     isRotating: false,
