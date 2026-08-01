@@ -13,25 +13,25 @@ const TIMELINE_DATA: TimelineItem[] = [
     id: 't1',
     year: '2024 – PRESENT',
     role: 'Senior Full-Stack & AI Engineer',
-    description: 'Architecting distributed multi-agent AI workflows, microservices, and web engines.'
+    description: 'Multi-agent AI workflows & distributed systems.'
   },
   {
     id: 't2',
     year: '2022 – 2024',
     role: 'Full-Stack Systems Engineer',
-    description: 'Built high-throughput APIs, database cache pipelines (Redis/PostgreSQL), and web platforms.'
+    description: 'High-throughput APIs & cloud microservices.'
   },
   {
     id: 't3',
     year: '2021 – 2022',
     role: 'Software Engineering Intern',
-    description: 'Developed backend microservices, performance scripts, and open-source packages.'
+    description: 'Backend microservices & open-source tools.'
   },
   {
     id: 't4',
     year: '2021',
     role: 'B.Tech Computer Science',
-    description: 'Graduated with distinction; focused on distributed systems and algorithms.'
+    description: 'B.Tech CS degree; focused on algorithms.'
   }
 ];
 
@@ -40,7 +40,10 @@ interface CareerTimelineTileProps {
 }
 
 export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentColor }) => {
-  const [hoveredIndex, setHoveredIndex] = useState<number>(0);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  // Active Job Accent Color: High-Tech Electric Cyan (#38bdf8)
+  const activeJobColor = '#38bdf8';
 
   return (
     <motion.div
@@ -48,6 +51,7 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
       className="career-timeline-minimal"
+      onMouseLeave={() => setHoveredIndex(null)}
       style={{
         width: '100%',
         height: '100%',
@@ -61,30 +65,11 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
         position: 'relative'
       }}
     >
-      {/* Clean Header */}
+      {/* Main Timeline List Container (Heading Removed per directive) */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '1.2rem',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-          paddingBottom: '0.75rem'
-        }}
+        onMouseLeave={() => setHoveredIndex(null)}
+        style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', margin: '0.2rem 0' }}
       >
-        <h2 style={{ fontSize: '1.05rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-          CAREER TIMELINE
-        </h2>
-
-        <motion.span
-          animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
-          transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-          style={{ width: '6px', height: '6px', borderRadius: '50%', background: accentColor, boxShadow: `0 0 10px ${accentColor}` }}
-        />
-      </div>
-
-      {/* Main Timeline List Container */}
-      <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', margin: '0.4rem 0' }}>
         {/* Continuous Background Hairline Axis Line */}
         <div
           style={{
@@ -98,7 +83,7 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
           }}
         />
 
-        {/* Milestone Rows: Node Bullet Locked on Vertical Axis */}
+        {/* Milestone Rows */}
         {TIMELINE_DATA.map((item, index) => {
           const isHovered = hoveredIndex === index;
           const isPresent = index === 0;
@@ -107,6 +92,7 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
             <div
               key={item.id}
               onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -117,13 +103,13 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
                 cursor: 'pointer'
               }}
             >
-              {/* Bullet Node (LOCKED STRICTLY ON THE VERTICAL AXIS, NO X-TRANSLATION) */}
+              {/* Bullet Node */}
               <div style={{ width: '15px', display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
                 <motion.div
                   animate={{
                     scale: isHovered ? 1.4 : 1,
-                    backgroundColor: isHovered ? accentColor : isPresent ? '#10b981' : 'rgba(255, 255, 255, 0.35)',
-                    boxShadow: isHovered ? `0 0 12px ${accentColor}` : isPresent ? '0 0 8px #10b981' : 'none'
+                    backgroundColor: isHovered ? accentColor : isPresent ? activeJobColor : 'rgba(255, 255, 255, 0.35)',
+                    boxShadow: isHovered ? `0 0 12px ${accentColor}` : isPresent ? `0 0 10px ${activeJobColor}` : 'none'
                   }}
                   transition={{ type: 'spring', stiffness: 300, damping: 18 }}
                   style={{
@@ -134,7 +120,7 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
                 />
               </div>
 
-              {/* Text Element (SLIDES RIGHT ON HOVER FOR SMOOTH DEPTH) */}
+              {/* Text Element (TURNS ELECTRIC ORANGE ON HOVER) */}
               <motion.div
                 animate={{ x: isHovered ? 5 : 0 }}
                 transition={{ type: 'spring', stiffness: 350, damping: 22 }}
@@ -145,26 +131,54 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
                     style={{
                       fontSize: '0.72rem',
                       fontFamily: 'var(--font-mono)',
-                      color: isPresent ? '#10b981' : isHovered ? accentColor : 'var(--text-muted)',
+                      color: isHovered ? accentColor : isPresent ? activeJobColor : 'var(--text-muted)',
                       fontWeight: 600,
-                      letterSpacing: '0.05em'
+                      letterSpacing: '0.05em',
+                      transition: 'color 0.25s ease'
                     }}
                   >
                     {item.year}
                   </span>
 
                   {isPresent && (
-                    <span style={{ fontSize: '0.6rem', fontFamily: 'var(--font-mono)', color: '#10b981', opacity: 0.85 }}>
+                    <span
+                      style={{
+                        fontSize: '0.6rem',
+                        fontFamily: 'var(--font-mono)',
+                        color: isHovered ? accentColor : activeJobColor,
+                        opacity: 0.9,
+                        fontWeight: 600,
+                        transition: 'color 0.25s ease'
+                      }}
+                    >
                       [ACTIVE]
                     </span>
                   )}
                 </div>
 
-                <h3 style={{ fontSize: '1.02rem', fontFamily: 'var(--font-satoshi)', color: '#ffffff', fontWeight: 700, margin: '0.05rem 0 0.15rem 0' }}>
+                <h3
+                  style={{
+                    fontSize: '1.02rem',
+                    fontFamily: 'var(--font-satoshi)',
+                    color: isHovered ? accentColor : '#ffffff',
+                    fontWeight: 700,
+                    margin: '0.05rem 0 0.15rem 0',
+                    transition: 'color 0.25s ease'
+                  }}
+                >
                   {item.role}
                 </h3>
 
-                <p style={{ fontSize: '0.84rem', fontFamily: 'var(--font-satoshi)', color: isHovered ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.65)', lineHeight: 1.45, margin: 0 }}>
+                <p
+                  style={{
+                    fontSize: '0.84rem',
+                    fontFamily: 'var(--font-satoshi)',
+                    color: isHovered ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.65)',
+                    lineHeight: 1.45,
+                    margin: 0,
+                    transition: 'color 0.25s ease'
+                  }}
+                >
                   {item.description}
                 </p>
               </motion.div>

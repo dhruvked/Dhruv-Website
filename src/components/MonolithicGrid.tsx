@@ -3,21 +3,28 @@ import { ASYMMETRICAL_GRID_TILES, type TileData } from '../data/portfolioData';
 import { TileCube } from './TileCube';
 import { GridBuilderStudio } from './GridBuilderStudio';
 
-const STORAGE_KEY = 'dhruv_portfolio_grid_layout_v4';
+const STORAGE_KEY = 'dhruv_portfolio_grid_layout_v13';
 
 export const MonolithicGrid: React.FC = () => {
-  // Load tile layout state from LocalStorage or default to ASYMMETRICAL_GRID_TILES
   const [tiles, setTiles] = useState<TileData[]>(() => {
     try {
-      // Clear legacy storage keys to ensure fresh render of Hero + Timeline
       localStorage.removeItem('dhruv_portfolio_grid_layout_v1');
       localStorage.removeItem('dhruv_portfolio_grid_layout_v2');
       localStorage.removeItem('dhruv_portfolio_grid_layout_v3');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v4');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v5');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v6');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v7');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v8');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v9');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v10');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v11');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v12');
 
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length >= 2) {
+        if (Array.isArray(parsed) && parsed.length >= 3) {
           return parsed;
         }
       }
@@ -46,6 +53,15 @@ export const MonolithicGrid: React.FC = () => {
       localStorage.removeItem('dhruv_portfolio_grid_layout_v1');
       localStorage.removeItem('dhruv_portfolio_grid_layout_v2');
       localStorage.removeItem('dhruv_portfolio_grid_layout_v3');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v4');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v5');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v6');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v7');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v8');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v9');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v10');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v11');
+      localStorage.removeItem('dhruv_portfolio_grid_layout_v12');
     } catch (e) {}
   };
 

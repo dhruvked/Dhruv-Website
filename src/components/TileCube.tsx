@@ -3,6 +3,11 @@ import { ArrowLeft, GripVertical } from 'lucide-react';
 import type { TileData } from '../data/portfolioData';
 import { HeroTile } from './HeroTile';
 import { CareerTimelineTile } from './CareerTimelineTile';
+import { SocialConnectTile } from './SocialConnectTile';
+import { ClockTile } from './ClockTile';
+import { TerminalTile } from './TerminalTile';
+import { ProjectsTile } from './ProjectsTile';
+import { TechStackTile } from './TechStackTile';
 
 interface TileCubeProps {
   tile: TileData;
@@ -158,7 +163,6 @@ export const TileCube: React.FC<TileCubeProps> = ({
           cursor: 'pointer'
         }}
       >
-        {/* Top Visual Drag Handle */}
         <div
           onMouseDown={handleDragStart}
           onTouchStart={handleDragStart}
@@ -171,7 +175,6 @@ export const TileCube: React.FC<TileCubeProps> = ({
 
         <HeroTile accentColor={accentColor} />
 
-        {/* Bottom-Right Corner Resize Handle */}
         <div
           onMouseDown={handleResizeStart}
           onTouchStart={handleResizeStart}
@@ -198,9 +201,14 @@ export const TileCube: React.FC<TileCubeProps> = ({
             font-size: 0.65rem;
             color: var(--text-secondary);
             cursor: grab;
-            transition: all 0.2s ease;
+            transition: opacity 0.25s ease;
             user-select: none;
             touch-action: none;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-drag-handle,
+          .selected-tile-active .tile-drag-handle {
+            opacity: 1;
           }
           .tile-drag-handle:active {
             cursor: grabbing;
@@ -218,7 +226,12 @@ export const TileCube: React.FC<TileCubeProps> = ({
             user-select: none;
             touch-action: none;
             padding: 4px 6px;
-            transition: transform 0.2s ease;
+            transition: opacity 0.25s ease, transform 0.2s ease;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-resize-handle,
+          .selected-tile-active .tile-resize-handle {
+            opacity: 1;
           }
           .tile-resize-handle:hover {
             transform: scale(1.3);
@@ -248,7 +261,6 @@ export const TileCube: React.FC<TileCubeProps> = ({
           cursor: 'pointer'
         }}
       >
-        {/* Top Visual Drag Handle */}
         <div
           onMouseDown={handleDragStart}
           onTouchStart={handleDragStart}
@@ -261,7 +273,6 @@ export const TileCube: React.FC<TileCubeProps> = ({
 
         <CareerTimelineTile accentColor={accentColor} />
 
-        {/* Bottom-Right Corner Resize Handle */}
         <div
           onMouseDown={handleResizeStart}
           onTouchStart={handleResizeStart}
@@ -288,9 +299,14 @@ export const TileCube: React.FC<TileCubeProps> = ({
             font-size: 0.65rem;
             color: var(--text-secondary);
             cursor: grab;
-            transition: all 0.2s ease;
+            transition: opacity 0.25s ease;
             user-select: none;
             touch-action: none;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-drag-handle,
+          .selected-tile-active .tile-drag-handle {
+            opacity: 1;
           }
           .tile-drag-handle:active {
             cursor: grabbing;
@@ -308,7 +324,502 @@ export const TileCube: React.FC<TileCubeProps> = ({
             user-select: none;
             touch-action: none;
             padding: 4px 6px;
-            transition: transform 0.2s ease;
+            transition: opacity 0.25s ease, transform 0.2s ease;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-resize-handle,
+          .selected-tile-active .tile-resize-handle {
+            opacity: 1;
+          }
+          .tile-resize-handle:hover {
+            transform: scale(1.3);
+            color: var(--accent-orange-bright);
+          }
+          .selected-tile-active {
+            border-color: var(--accent-orange) !important;
+            box-shadow: inset 0 0 20px rgba(255, 107, 0, 0.15), 0 0 25px rgba(255, 107, 0, 0.3) !important;
+            z-index: 50;
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Dedicated Social Connect Matrix Renderer
+  if (tile.id === 'social-connect') {
+    return (
+      <div
+        className={`cube-wrapper ${isSelected ? 'selected-tile-active' : ''}`}
+        onClick={handleTileClick}
+        style={{
+          gridColumnStart: colStart || 'auto',
+          gridColumnEnd: `span ${colSpan}`,
+          gridRowStart: rowStart || 'auto',
+          gridRowEnd: `span ${rowSpan}`,
+          cursor: 'pointer'
+        }}
+      >
+        <div
+          onMouseDown={handleDragStart}
+          onTouchStart={handleDragStart}
+          className="tile-drag-handle"
+          title="Touch & Drag to reposition tile"
+        >
+          <GripVertical size={13} style={{ color: accentColor }} />
+          <span>DRAG TILE</span>
+        </div>
+
+        <SocialConnectTile accentColor={accentColor} />
+
+        <div
+          onMouseDown={handleResizeStart}
+          onTouchStart={handleResizeStart}
+          className="tile-resize-handle"
+          title="Touch & Drag to resize width/height"
+        >
+          ◢
+        </div>
+
+        <style>{`
+          .tile-drag-handle {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(8, 10, 15, 0.85);
+            border: 1px solid var(--border-hairline);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            cursor: grab;
+            transition: opacity 0.25s ease;
+            user-select: none;
+            touch-action: none;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-drag-handle,
+          .selected-tile-active .tile-drag-handle {
+            opacity: 1;
+          }
+          .tile-drag-handle:active {
+            cursor: grabbing;
+            border-color: var(--accent-orange);
+            background: rgba(255, 107, 0, 0.2);
+          }
+          .tile-resize-handle {
+            position: absolute;
+            bottom: 3px;
+            right: 4px;
+            z-index: 80;
+            font-size: 0.8rem;
+            color: var(--accent-orange);
+            cursor: se-resize;
+            user-select: none;
+            touch-action: none;
+            padding: 4px 6px;
+            transition: opacity 0.25s ease, transform 0.2s ease;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-resize-handle,
+          .selected-tile-active .tile-resize-handle {
+            opacity: 1;
+          }
+          .tile-resize-handle:hover {
+            transform: scale(1.3);
+            color: var(--accent-orange-bright);
+          }
+          .selected-tile-active {
+            border-color: var(--accent-orange) !important;
+            box-shadow: inset 0 0 20px rgba(255, 107, 0, 0.15), 0 0 25px rgba(255, 107, 0, 0.3) !important;
+            z-index: 50;
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Dedicated Clock Tile Renderer
+  if (tile.id === 'clock-tile') {
+    return (
+      <div
+        className={`cube-wrapper ${isSelected ? 'selected-tile-active' : ''}`}
+        onClick={handleTileClick}
+        style={{
+          gridColumnStart: colStart || 'auto',
+          gridColumnEnd: `span ${colSpan}`,
+          gridRowStart: rowStart || 'auto',
+          gridRowEnd: `span ${rowSpan}`,
+          cursor: 'pointer'
+        }}
+      >
+        <div
+          onMouseDown={handleDragStart}
+          onTouchStart={handleDragStart}
+          className="tile-drag-handle"
+          title="Touch & Drag to reposition tile"
+        >
+          <GripVertical size={13} style={{ color: accentColor }} />
+          <span>DRAG TILE</span>
+        </div>
+
+        <ClockTile accentColor={accentColor} />
+
+        <div
+          onMouseDown={handleResizeStart}
+          onTouchStart={handleResizeStart}
+          className="tile-resize-handle"
+          title="Touch & Drag to resize width/height"
+        >
+          ◢
+        </div>
+
+        <style>{`
+          .tile-drag-handle {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(8, 10, 15, 0.85);
+            border: 1px solid var(--border-hairline);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            cursor: grab;
+            transition: opacity 0.25s ease;
+            user-select: none;
+            touch-action: none;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-drag-handle,
+          .selected-tile-active .tile-drag-handle {
+            opacity: 1;
+          }
+          .tile-drag-handle:active {
+            cursor: grabbing;
+            border-color: var(--accent-orange);
+            background: rgba(255, 107, 0, 0.2);
+          }
+          .tile-resize-handle {
+            position: absolute;
+            bottom: 3px;
+            right: 4px;
+            z-index: 80;
+            font-size: 0.8rem;
+            color: var(--accent-orange);
+            cursor: se-resize;
+            user-select: none;
+            touch-action: none;
+            padding: 4px 6px;
+            transition: opacity 0.25s ease, transform 0.2s ease;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-resize-handle,
+          .selected-tile-active .tile-resize-handle {
+            opacity: 1;
+          }
+          .tile-resize-handle:hover {
+            transform: scale(1.3);
+            color: var(--accent-orange-bright);
+          }
+          .selected-tile-active {
+            border-color: var(--accent-orange) !important;
+            box-shadow: inset 0 0 20px rgba(255, 107, 0, 0.15), 0 0 25px rgba(255, 107, 0, 0.3) !important;
+            z-index: 50;
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Dedicated Interactive CLI Terminal Sandbox Renderer
+  if (tile.id === 'terminal-sandbox') {
+    return (
+      <div
+        className={`cube-wrapper ${isSelected ? 'selected-tile-active' : ''}`}
+        onClick={handleTileClick}
+        style={{
+          gridColumnStart: colStart || 'auto',
+          gridColumnEnd: `span ${colSpan}`,
+          gridRowStart: rowStart || 'auto',
+          gridRowEnd: `span ${rowSpan}`,
+          cursor: 'pointer'
+        }}
+      >
+        <div
+          onMouseDown={handleDragStart}
+          onTouchStart={handleDragStart}
+          className="tile-drag-handle"
+          title="Touch & Drag to reposition tile"
+        >
+          <GripVertical size={13} style={{ color: accentColor }} />
+          <span>DRAG TILE</span>
+        </div>
+
+        <TerminalTile accentColor={accentColor} />
+
+        <div
+          onMouseDown={handleResizeStart}
+          onTouchStart={handleResizeStart}
+          className="tile-resize-handle"
+          title="Touch & Drag to resize width/height"
+        >
+          ◢
+        </div>
+
+        <style>{`
+          .tile-drag-handle {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(8, 10, 15, 0.85);
+            border: 1px solid var(--border-hairline);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            cursor: grab;
+            transition: opacity 0.25s ease;
+            user-select: none;
+            touch-action: none;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-drag-handle,
+          .selected-tile-active .tile-drag-handle {
+            opacity: 1;
+          }
+          .tile-drag-handle:active {
+            cursor: grabbing;
+            border-color: var(--accent-orange);
+            background: rgba(255, 107, 0, 0.2);
+          }
+          .tile-resize-handle {
+            position: absolute;
+            bottom: 3px;
+            right: 4px;
+            z-index: 80;
+            font-size: 0.8rem;
+            color: var(--accent-orange);
+            cursor: se-resize;
+            user-select: none;
+            touch-action: none;
+            padding: 4px 6px;
+            transition: opacity 0.25s ease, transform 0.2s ease;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-resize-handle,
+          .selected-tile-active .tile-resize-handle {
+            opacity: 1;
+          }
+          .tile-resize-handle:hover {
+            transform: scale(1.3);
+            color: var(--accent-orange-bright);
+          }
+          .selected-tile-active {
+            border-color: var(--accent-orange) !important;
+            box-shadow: inset 0 0 20px rgba(255, 107, 0, 0.15), 0 0 25px rgba(255, 107, 0, 0.3) !important;
+            z-index: 50;
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Dedicated Featured Projects Bento Renderer
+  if (tile.id === 'featured-projects') {
+    return (
+      <div
+        className={`cube-wrapper ${isSelected ? 'selected-tile-active' : ''}`}
+        onClick={handleTileClick}
+        style={{
+          gridColumnStart: colStart || 'auto',
+          gridColumnEnd: `span ${colSpan}`,
+          gridRowStart: rowStart || 'auto',
+          gridRowEnd: `span ${rowSpan}`,
+          cursor: 'pointer'
+        }}
+      >
+        <div
+          onMouseDown={handleDragStart}
+          onTouchStart={handleDragStart}
+          className="tile-drag-handle"
+          title="Touch & Drag to reposition tile"
+        >
+          <GripVertical size={13} style={{ color: accentColor }} />
+          <span>DRAG TILE</span>
+        </div>
+
+        <ProjectsTile accentColor={accentColor} />
+
+        <div
+          onMouseDown={handleResizeStart}
+          onTouchStart={handleResizeStart}
+          className="tile-resize-handle"
+          title="Touch & Drag to resize width/height"
+        >
+          ◢
+        </div>
+
+        <style>{`
+          .tile-drag-handle {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(8, 10, 15, 0.85);
+            border: 1px solid var(--border-hairline);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            cursor: grab;
+            transition: opacity 0.25s ease;
+            user-select: none;
+            touch-action: none;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-drag-handle,
+          .selected-tile-active .tile-drag-handle {
+            opacity: 1;
+          }
+          .tile-drag-handle:active {
+            cursor: grabbing;
+            border-color: var(--accent-orange);
+            background: rgba(255, 107, 0, 0.2);
+          }
+          .tile-resize-handle {
+            position: absolute;
+            bottom: 3px;
+            right: 4px;
+            z-index: 80;
+            font-size: 0.8rem;
+            color: var(--accent-orange);
+            cursor: se-resize;
+            user-select: none;
+            touch-action: none;
+            padding: 4px 6px;
+            transition: opacity 0.25s ease, transform 0.2s ease;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-resize-handle,
+          .selected-tile-active .tile-resize-handle {
+            opacity: 1;
+          }
+          .tile-resize-handle:hover {
+            transform: scale(1.3);
+            color: var(--accent-orange-bright);
+          }
+          .selected-tile-active {
+            border-color: var(--accent-orange) !important;
+            box-shadow: inset 0 0 20px rgba(255, 107, 0, 0.15), 0 0 25px rgba(255, 107, 0, 0.3) !important;
+            z-index: 50;
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Dedicated Tech Stack Matrix Renderer
+  if (tile.id === 'tech-stack-matrix') {
+    return (
+      <div
+        className={`cube-wrapper ${isSelected ? 'selected-tile-active' : ''}`}
+        onClick={handleTileClick}
+        style={{
+          gridColumnStart: colStart || 'auto',
+          gridColumnEnd: `span ${colSpan}`,
+          gridRowStart: rowStart || 'auto',
+          gridRowEnd: `span ${rowSpan}`,
+          cursor: 'pointer'
+        }}
+      >
+        <div
+          onMouseDown={handleDragStart}
+          onTouchStart={handleDragStart}
+          className="tile-drag-handle"
+          title="Touch & Drag to reposition tile"
+        >
+          <GripVertical size={13} style={{ color: accentColor }} />
+          <span>DRAG TILE</span>
+        </div>
+
+        <TechStackTile accentColor={accentColor} />
+
+        <div
+          onMouseDown={handleResizeStart}
+          onTouchStart={handleResizeStart}
+          className="tile-resize-handle"
+          title="Touch & Drag to resize width/height"
+        >
+          ◢
+        </div>
+
+        <style>{`
+          .tile-drag-handle {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(8, 10, 15, 0.85);
+            border: 1px solid var(--border-hairline);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            cursor: grab;
+            transition: opacity 0.25s ease;
+            user-select: none;
+            touch-action: none;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-drag-handle,
+          .selected-tile-active .tile-drag-handle {
+            opacity: 1;
+          }
+          .tile-drag-handle:active {
+            cursor: grabbing;
+            border-color: var(--accent-orange);
+            background: rgba(255, 107, 0, 0.2);
+          }
+          .tile-resize-handle {
+            position: absolute;
+            bottom: 3px;
+            right: 4px;
+            z-index: 80;
+            font-size: 0.8rem;
+            color: var(--accent-orange);
+            cursor: se-resize;
+            user-select: none;
+            touch-action: none;
+            padding: 4px 6px;
+            transition: opacity 0.25s ease, transform 0.2s ease;
+            opacity: 0.15;
+          }
+          .cube-wrapper:hover .tile-resize-handle,
+          .selected-tile-active .tile-resize-handle {
+            opacity: 1;
           }
           .tile-resize-handle:hover {
             transform: scale(1.3);
@@ -361,7 +872,6 @@ export const TileCube: React.FC<TileCubeProps> = ({
         cursor: 'pointer'
       }}
     >
-      {/* Top Visual Drag Handle */}
       <div
         onMouseDown={handleDragStart}
         onTouchStart={handleDragStart}
@@ -479,7 +989,6 @@ export const TileCube: React.FC<TileCubeProps> = ({
         </div>
       </div>
 
-      {/* Bottom-Right Corner Resize Handle */}
       <div
         onMouseDown={handleResizeStart}
         onTouchStart={handleResizeStart}
@@ -506,9 +1015,14 @@ export const TileCube: React.FC<TileCubeProps> = ({
           font-size: 0.65rem;
           color: var(--text-secondary);
           cursor: grab;
-          transition: all 0.2s ease;
+          transition: opacity 0.25s ease;
           user-select: none;
           touch-action: none;
+          opacity: 0.15;
+        }
+        .cube-wrapper:hover .tile-drag-handle,
+        .selected-tile-active .tile-drag-handle {
+          opacity: 1;
         }
         .tile-drag-handle:active {
           cursor: grabbing;
@@ -526,7 +1040,12 @@ export const TileCube: React.FC<TileCubeProps> = ({
           user-select: none;
           touch-action: none;
           padding: 4px 6px;
-          transition: transform 0.2s ease;
+          transition: opacity 0.25s ease, transform 0.2s ease;
+          opacity: 0.15;
+        }
+        .cube-wrapper:hover .tile-resize-handle,
+        .selected-tile-active .tile-resize-handle {
+          opacity: 1;
         }
         .tile-resize-handle:hover {
           transform: scale(1.3);

@@ -52,13 +52,68 @@ export const ASYMMETRICAL_GRID_TILES: TileData[] = [
     }
   },
   {
+    id: 'social-connect',
+    gridSpan: { colStart: 8, rowStart: 1, colSpan: 5, rowSpan: 2 },
+    isRotating: false,
+    type: 'social',
+    front: {
+      title: 'Social Connect',
+      subtitle: 'CONNECT',
+      accentColor: '#ff6b00'
+    }
+  },
+  {
     id: 'career-timeline',
-    gridSpan: { colStart: 8, rowStart: 1, colSpan: 5, rowSpan: 12 },
+    gridSpan: { colStart: 8, rowStart: 3, colSpan: 5, rowSpan: 10 },
     isRotating: false,
     type: 'timeline',
     front: {
       title: 'Career Timeline',
       subtitle: 'MILESTONES',
+      accentColor: '#ff6b00'
+    }
+  },
+  {
+    id: 'clock-tile',
+    gridSpan: { colStart: 1, rowStart: 1, colSpan: 4, rowSpan: 4 },
+    isRotating: true,
+    type: 'clock',
+    front: {
+      title: 'Local Clock',
+      subtitle: 'ANALOG CLOCK',
+      accentColor: '#ff6b00'
+    }
+  },
+  {
+    id: 'terminal-sandbox',
+    gridSpan: { colStart: 5, rowStart: 1, colSpan: 6, rowSpan: 6 },
+    isRotating: false,
+    type: 'terminal',
+    front: {
+      title: 'CLI Terminal',
+      subtitle: 'INTERACTIVE SANDBOX',
+      accentColor: '#ff6b00'
+    }
+  },
+  {
+    id: 'featured-projects',
+    gridSpan: { colStart: 1, rowStart: 7, colSpan: 12, rowSpan: 6 },
+    isRotating: false,
+    type: 'projects',
+    front: {
+      title: 'Featured Projects',
+      subtitle: 'BENTO MATRIX',
+      accentColor: '#ff6b00'
+    }
+  },
+  {
+    id: 'tech-stack-matrix',
+    gridSpan: { colStart: 1, rowStart: 1, colSpan: 12, rowSpan: 6 },
+    isRotating: false,
+    type: 'techstack',
+    front: {
+      title: 'Tech Stack Matrix',
+      subtitle: 'CATEGORIZED PROFICIENCY',
       accentColor: '#ff6b00'
     }
   }
