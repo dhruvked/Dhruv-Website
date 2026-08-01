@@ -2,48 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 interface ClockTileProps {
-  accentColor: string;
+  accentColor?: string;
 }
 
-export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
+export const ClockTile: React.FC<ClockTileProps> = ({ accentColor = '#ff6b00' }) => {
   const [time, setTime] = useState<Date>(new Date());
+  const [isFlipped, setIsFlipped] = useState(false);
   const [frame, setFrame] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  // Animation frame loop for Kolkata scene (Taxi movement, water ripples, stars)
-  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
     const pixelTimer = setInterval(() => {
-      setFrame((prev) => (prev + 1) % 24);
-    }, 180);
+      setFrame((prev) => (prev + 1) % 16);
+    }, 250);
 
-    return () => clearInterval(pixelTimer);
+    return () => {
+      clearInterval(timer);
+      clearInterval(pixelTimer);
+    };
   }, []);
 
-  // Time metrics
   const seconds = time.getSeconds();
   const minutes = time.getMinutes();
-  const hours = time.getHours();
+  const hours = time.getHours() % 12;
 
-  // Time of Day States
-  const isDaytime = hours >= 6 && hours < 18;
-  const isSunset = hours >= 18 && hours < 20;
-  const isNighttime = hours >= 20 || hours < 6;
+  const secondsDegrees = (seconds / 60) * 360;
+  const minutesDegrees = ((minutes + seconds / 60) / 60) * 360;
+  const hoursDegrees = ((hours + minutes / 60) / 12) * 360;
 
-  const secondDeg = seconds * 6;
-  const minuteDeg = minutes * 6 + seconds * 0.1;
-  const hourDeg = (hours % 12) * 30 + minutes * 0.5;
-
-  const formattedTimeStr = time.toLocaleTimeString('en-US', {
+  const isDaytime = time.getHours() >= 6 && time.getHours() < 18;
+  const timeString = time.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit',
     hour12: true
   });
 
@@ -51,8 +42,12 @@ export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
     <div
       className="clock-tile-container"
       onClick={() => setIsFlipped(!isFlipped)}
-      onMouseEnter={() => setIsFlipped(true)}
-      onMouseLeave={() => setIsFlipped(false)}
+      onMouseEnter={() => {
+        if (window.matchMedia('(hover: hover)').matches) setIsFlipped(true);
+      }}
+      onMouseLeave={() => {
+        if (window.matchMedia('(hover: hover)').matches) setIsFlipped(false);
+      }}
       style={{ width: '100%', height: '100%', position: 'relative', perspective: '1200px', cursor: 'pointer' }}
     >
       {/* Framer Motion 3D Rotatable Inner Container */}
@@ -81,8 +76,7 @@ export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
             height: '100%',
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderTop: `2px solid ${accentColor}`,
+            border: 'none',
             borderRadius: '8px',
             padding: '1.2rem',
             display: 'flex',
@@ -144,15 +138,13 @@ export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
                   key={idx}
                   style={{
                     position: 'absolute',
-                    top: '5px',
-                    left: 'calc(50% - 1px)',
+                    top: '4px',
+                    left: '50%',
                     width: isMajor ? '2px' : '1px',
                     height: isMajor ? '8px' : '5px',
-                    background: isMajor
-                      ? isDaytime ? accentColor : '#c084fc'
-                      : 'rgba(255, 255, 255, 0.25)',
-                    transformOrigin: '50% 60px',
-                    transform: `rotate(${angle}deg)`
+                    background: isMajor ? accentColor : 'rgba(255, 255, 255, 0.25)',
+                    transformOrigin: '50% 61px',
+                    transform: `rotate(${angle}deg) translate(-50%, 0)`
                   }}
                 />
               );
@@ -162,15 +154,15 @@ export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
             <div
               style={{
                 position: 'absolute',
-                top: '50%',
+                bottom: '50%',
                 left: '50%',
                 width: '3px',
-                height: '32px',
+                height: '35px',
                 background: '#ffffff',
-                borderRadius: '4px',
-                transformOrigin: '50% 0%',
-                transform: `translate(-50%, 0%) rotate(${hourDeg + 180}deg)`,
-                zIndex: 2
+                borderRadius: '2px',
+                transformOrigin: '50% 100%',
+                transform: `translateX(-50%) rotate(${hoursDegrees}deg)`,
+                boxShadow: '0 0 6px rgba(255,255,255,0.4)'
               }}
             />
 
@@ -178,15 +170,14 @@ export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
             <div
               style={{
                 position: 'absolute',
-                top: '50%',
+                bottom: '50%',
                 left: '50%',
                 width: '2px',
-                height: '46px',
+                height: '48px',
                 background: 'rgba(255, 255, 255, 0.85)',
-                borderRadius: '3px',
-                transformOrigin: '50% 0%',
-                transform: `translate(-50%, 0%) rotate(${minuteDeg + 180}deg)`,
-                zIndex: 3
+                borderRadius: '2px',
+                transformOrigin: '50% 100%',
+                transform: `translateX(-50%) rotate(${minutesDegrees}deg)`
               }}
             />
 
@@ -194,33 +185,47 @@ export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
             <div
               style={{
                 position: 'absolute',
-                top: '50%',
+                bottom: '50%',
                 left: '50%',
                 width: '1.5px',
                 height: '52px',
-                background: isDaytime ? accentColor : '#a855f7',
-                borderRadius: '2px',
-                transformOrigin: '50% 0%',
-                transform: `translate(-50%, 0%) rotate(${secondDeg + 180}deg)`,
-                zIndex: 4
+                background: accentColor,
+                transformOrigin: '50% 100%',
+                transform: `translateX(-50%) rotate(${secondsDegrees}deg)`,
+                boxShadow: `0 0 8px ${accentColor}`
               }}
             />
 
-            {/* Center Pivot Dot */}
+            {/* Center Pivot Cap */}
             <div
               style={{
-                position: 'absolute',
-                width: '6px',
-                height: '6px',
+                width: '7px',
+                height: '7px',
                 borderRadius: '50%',
-                background: isDaytime ? accentColor : '#c084fc',
-                zIndex: 5
+                background: accentColor,
+                border: '1.5px solid #ffffff',
+                boxShadow: `0 0 8px ${accentColor}`,
+                zIndex: 10
               }}
             />
           </div>
+
+          {/* Time Zone Subtext Tag */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '0.9rem',
+              fontSize: '0.62rem',
+              fontFamily: 'var(--font-mono)',
+              color: 'rgba(255, 255, 255, 0.45)',
+              letterSpacing: '0.04em'
+            }}
+          >
+            KOLKATA // IST (+5:30)
+          </div>
         </div>
 
-        {/* BACK FACE: ICONIC KOLKATA 8-BIT ANIMATION (HOWRAH BRIDGE + YELLOW TAXI + HOOGHLY RIVER) */}
+        {/* BACK FACE: 8-BIT ANIMATED RETRO KOLKATA SCENE */}
         <div
           className="cube-face cube-face-side"
           style={{
@@ -231,142 +236,112 @@ export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
             transform: 'rotateY(180deg)',
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderTop: `2px solid ${accentColor}`,
+            border: 'none',
             borderRadius: '8px',
-            padding: '1rem',
+            padding: '1.2rem 1rem 0.8rem 1rem',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
             alignItems: 'center',
-            textAlign: 'center',
-            background: '#07090e'
+            background: '#07090e',
+            overflow: 'hidden'
           }}
         >
-          {/* Location Header */}
-          <div
-            style={{
-              fontSize: '0.75rem',
-              fontFamily: 'var(--font-clash)',
-              color: accentColor,
-              fontWeight: 700,
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase'
-            }}
-          >
-            KOLKATA, INDIA
-          </div>
-
-          {/* 8-Bit Pixel Scene Canvas (Howrah Bridge + Yellow Taxi + Hooghly River) */}
-          <div
-            style={{
-              width: '100%',
-              height: '76px',
-              position: 'relative',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0.1rem 0'
-            }}
-          >
+          {/* Pixel Art Kolkata Scene SVG */}
+          <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg
-              width="140"
-              height="76"
-              viewBox="0 0 100 54"
+              width="150"
+              height="85"
+              viewBox="0 0 110 65"
               fill="none"
               style={{ shapeRendering: 'crispEdges', maxWidth: '100%', maxHeight: '100%' }}
             >
-              {/* SKY BACKGROUND */}
+              {/* Sky Background */}
               <rect
                 x="0"
                 y="0"
-                width="100"
-                height="34"
-                fill={isDaytime ? '#38bdf8' : isSunset ? '#c084fc' : '#090d16'}
+                width="110"
+                height="45"
+                fill={isDaytime ? '#38bdf8' : '#0a0d16'}
               />
 
-              {/* Day Clouds or Night Moon/Stars */}
-              {isDaytime && (
+              {/* Day Sun & Clouds */}
+              {isDaytime ? (
                 <>
-                  <rect x={10 + ((frame * 2) % 60)} y="6" width="12" height="3" fill="#ffffff" opacity="0.85" />
-                  <rect x={40 + ((frame * 2 + 10) % 50)} y="12" width="10" height="3" fill="#ffffff" opacity="0.75" />
+                  <rect x="85" y="6" width="10" height="10" fill="#fef08a" />
+                  <rect x={10 + ((frame * 2) % 25)} y="10" width="12" height="4" fill="#ffffff" opacity="0.9" />
+                  <rect x={55 + ((frame * 2) % 20)} y="15" width="10" height="3" fill="#ffffff" opacity="0.8" />
+                </>
+              ) : (
+                <>
+                  {/* Moon & Stars */}
+                  <rect x="86" y="6" width="8" height="8" fill="#fef08a" />
+                  <rect x="12" y="8" width="2" height="2" fill="#ffffff" opacity={frame % 2 === 0 ? 1 : 0.3} />
+                  <rect x="35" y="14" width="2" height="2" fill="#ffffff" opacity={frame % 3 === 0 ? 1 : 0.4} />
+                  <rect x="62" y="7" width="2" height="2" fill="#ffffff" opacity={frame % 2 === 1 ? 1 : 0.2} />
+                  {/* Shooting Star */}
+                  <rect x={75 - (frame % 6) * 3} y={4 + (frame % 6) * 2} width="4" height="1" fill="#ffffff" opacity="0.8" />
                 </>
               )}
 
-              {isSunset && (
-                <rect x="74" y="10" width="8" height="8" fill="#ff6b00" rx="4" />
-              )}
+              {/* HOWRAH BRIDGE STEEL CANTILEVER TRUSS STRUCTURE */}
+              {/* Bridge Pylons */}
+              <rect x="12" y="14" width="4" height="34" fill="#64748b" />
+              <rect x="16" y="14" width="2" height="34" fill="#475569" />
+              <rect x="92" y="14" width="4" height="34" fill="#64748b" />
+              <rect x="90" y="14" width="2" height="48" fill="#475569" />
 
-              {isNighttime && (
-                <>
-                  <rect x="80" y="6" width="5" height="5" fill="#fef08a" />
-                  <rect x="12" y="8" width="1.5" height="1.5" fill="#ffffff" opacity={frame % 2 === 0 ? 1 : 0.3} />
-                  <rect x="35" y="14" width="1.5" height="1.5" fill="#ffffff" opacity={frame % 3 === 0 ? 1 : 0.3} />
-                  <rect x="62" y="7" width="1.5" height="1.5" fill="#ffffff" opacity={frame % 4 === 0 ? 1 : 0.3} />
-                </>
-              )}
+              {/* Cantilever Upper Steel Girders & Diagonal Cross Bracing */}
+              <polygon points="12,14 54,28 96,14" stroke="#94a3b8" strokeWidth="2" fill="none" />
+              <line x1="14" y1="14" x2="94" y2="14" stroke="#64748b" strokeWidth="2" />
+              <line x1="24" y1="18" x2="24" y2="38" stroke="#475569" strokeWidth="1" />
+              <line x1="40" y1="23" x2="40" y2="38" stroke="#475569" strokeWidth="1" />
+              <line x1="68" y1="23" x2="68" y2="38" stroke="#475569" strokeWidth="1" />
+              <line x1="84" y1="18" x2="84" y2="38" stroke="#475569" strokeWidth="1" />
 
-              {/* 🌁 HOWRAH BRIDGE STEEL TRUSS STRUCTURE */}
-              {/* Left Main Tower */}
-              <rect x="18" y="4" width="4" height="30" fill="#475569" />
-              <rect x="16" y="2" width="8" height="3" fill="#334155" />
-              <line x1="20" y1="4" x2="36" y2="34" stroke="#64748b" strokeWidth="1.5" />
-
-              {/* Right Main Tower */}
-              <rect x="78" y="4" width="4" height="30" fill="#475569" />
-              <rect x="76" y="2" width="8" height="3" fill="#334155" />
-              <line x1="80" y1="4" x2="64" y2="34" stroke="#64748b" strokeWidth="1.5" />
-
-              {/* Bridge Cantilever Trusses */}
-              <line x1="20" y1="6" x2="80" y2="6" stroke="#475569" strokeWidth="1.5" />
-              <line x1="20" y1="12" x2="80" y2="12" stroke="#64748b" strokeWidth="1" />
-              <line x1="20" y1="22" x2="80" y2="22" stroke="#64748b" strokeWidth="1" />
-
-              {/* Diagonal Cross Supports */}
-              <line x1="20" y1="6" x2="50" y2="22" stroke="#475569" strokeWidth="1" />
-              <line x1="80" y1="6" x2="50" y2="22" stroke="#475569" strokeWidth="1" />
+              {/* Diagonal Steel Struts */}
+              <line x1="14" y1="14" x2="40" y2="38" stroke="#64748b" strokeWidth="1" />
+              <line x1="94" y1="14" x2="68" y2="38" stroke="#64748b" strokeWidth="1" />
 
               {/* Bridge Road Deck */}
-              <rect x="0" y="33" width="100" height="3" fill="#1e293b" />
-              <rect x="0" y="36" width="100" height="1" fill="#ff6b00" opacity="0.6" />
+              <rect x="0" y="38" width="110" height="4" fill="#334155" />
+              <rect x="0" y="42" width="110" height="2" fill="#1e293b" />
 
-              {/* 🚊 ANIMATED KOLKATA YELLOW TAXI CAB */}
-              <g transform={`translate(${(frame * 4) % 110 - 15}, 26)`}>
-                {/* Taxi Yellow Body */}
-                <rect x="0" y="3" width="14" height="5" fill="#facc15" rx="1" />
-                {/* Black Roof & Stripes */}
-                <rect x="3" y="0" width="8" height="4" fill="#0f172a" />
-                <rect x="4" y="1" width="6" height="2" fill="#38bdf8" opacity="0.9" />
+              {/* ANIMATED KOLKATA YELLOW TAXI CAB (TRAVERSING BRIDGE) */}
+              <g transform={`translate(${(frame * 7) % 120 - 15}, 0)`}>
+                {/* Yellow Taxi Body */}
+                <rect x="0" y="32" width="16" height="6" fill="#eab308" rx="1" />
+                <rect x="3" y="29" width="10" height="4" fill="#fde047" rx="1" />
+                {/* Taxi Windows */}
+                <rect x="4" y="30" width="3" height="2" fill="#0f172a" />
+                <rect x="9" y="30" width="3" height="2" fill="#0f172a" />
+                {/* Black Stripe */}
+                <rect x="0" y="35" width="16" height="1" fill="#000000" />
                 {/* Wheels */}
-                <rect x="2" y="7" width="2.5" height="2.5" fill="#ffffff" />
-                <rect x="9.5" y="7" width="2.5" height="2.5" fill="#ffffff" />
-                {/* Headlight */}
-                <rect x="13" y="4" width="1.5" height="2" fill={isNighttime ? '#fef08a' : '#ff6b00'} />
+                <rect x="2" y="38" width="3" height="3" fill="#000000" />
+                <rect x="11" y="38" width="3" height="3" fill="#000000" />
+                {/* Headlight Glow */}
+                <rect x="15" y="34" width="2" height="2" fill="#fef08a" />
               </g>
 
-              {/* 🌊 HOOGHLY RIVER WATER & ANIMATED RIPPLES */}
-              <rect x="0" y="37" width="100" height="17" fill="#0f172a" />
-              <rect x="0" y="38" width="100" height="16" fill={isDaytime ? '#1e3a8a' : '#090d16'} />
-
-              {/* Water Ripples */}
-              <rect x={(frame * 3) % 80} y="41" width="12" height="1" fill="#38bdf8" opacity="0.7" />
-              <rect x={(frame * 2 + 30) % 70} y="46" width="16" height="1" fill="#38bdf8" opacity="0.5" />
-              <rect x={(frame * 3 + 15) % 85} y="50" width="10" height="1" fill="#38bdf8" opacity="0.6" />
+              {/* HOOGHLY RIVER WATER REFLECTIONS */}
+              <rect x="0" y="44" width="110" height="21" fill="#030712" />
+              {/* Animated Water Ripples */}
+              <rect x={5 + (frame % 4) * 3} y="48" width="14" height="1" fill="#38bdf8" opacity="0.4" />
+              <rect x={40 + ((frame + 2) % 4) * 4} y="53" width="18" height="1" fill="#38bdf8" opacity="0.3" />
+              <rect x={75 + (frame % 3) * 3} y="58" width="12" height="1" fill="#38bdf8" opacity="0.5" />
+              <rect x={20 + (frame % 5) * 2} y="61" width="22" height="1" fill="#38bdf8" opacity="0.25" />
             </svg>
           </div>
 
-          {/* Local Digital Time Readout */}
-          <div
-            style={{
-              fontSize: '1.9rem',
-              fontFamily: 'var(--font-clash)',
-              color: '#ffffff',
-              fontWeight: 700,
-              letterSpacing: '-0.02em',
-              lineHeight: 1
-            }}
-          >
-            {formattedTimeStr}
+          {/* Digital Time Readout */}
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '0.92rem', fontFamily: 'var(--font-mono)', color: accentColor, fontWeight: 700, letterSpacing: '0.06em' }}>
+              {timeString}
+            </div>
+            <span style={{ fontSize: '0.6rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.45)', textTransform: 'uppercase' }}>
+              KOLKATA, INDIA
+            </span>
           </div>
         </div>
       </motion.div>

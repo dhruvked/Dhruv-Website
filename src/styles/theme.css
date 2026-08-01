@@ -213,9 +213,21 @@ body.admin-mode-active,
   }
 }
 
-.cube-wrapper:hover {
-  border-color: rgba(255, 107, 0, 0.3);
-  box-shadow: inset 0 0 16px rgba(255, 107, 0, 0.05);
+/* Hover Effects Scoped strictly to Devices with True Mouse Pointer */
+@media (hover: hover) {
+  .cube-wrapper:hover {
+    border-color: rgba(255, 107, 0, 0.3);
+    box-shadow: inset 0 0 16px rgba(255, 107, 0, 0.05);
+  }
+
+  .cube-wrapper:hover .cube-face-front {
+    background-color: var(--bg-tile-hover);
+  }
+
+  .social-logo-glow-item:hover {
+    color: var(--accent-orange) !important;
+    filter: drop-shadow(0 0 10px var(--accent-orange)) drop-shadow(0 0 20px var(--accent-orange)) !important;
+  }
 }
 
 .cube-inner {
@@ -257,10 +269,6 @@ body.admin-mode-active,
   transform: rotateY(180deg);
   background: #06070a;
   z-index: 1;
-}
-
-.cube-wrapper:hover .cube-face-front {
-  background-color: var(--bg-tile-hover);
 }
 
 /* Blank Negative Space Tile */

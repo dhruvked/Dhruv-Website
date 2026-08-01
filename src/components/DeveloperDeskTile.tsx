@@ -126,8 +126,12 @@ export const DeveloperDeskTile: React.FC<DeveloperDeskTileProps> = ({ accentColo
     <div
       className="developer-desk-tile-container"
       onClick={() => setIsFlipped(!isFlipped)}
-      onMouseEnter={() => setIsFlipped(true)}
-      onMouseLeave={() => setIsFlipped(false)}
+      onMouseEnter={() => {
+        if (window.matchMedia('(hover: hover)').matches) setIsFlipped(true);
+      }}
+      onMouseLeave={() => {
+        if (window.matchMedia('(hover: hover)').matches) setIsFlipped(false);
+      }}
       style={{ width: '100%', height: '100%', position: 'relative', perspective: '1200px', cursor: 'pointer' }}
     >
       <motion.div

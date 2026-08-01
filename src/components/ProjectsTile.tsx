@@ -19,7 +19,7 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
     setProjectsList(ContentStore.getContent().projects);
   }, []);
 
-  // ROTATES EVERY 4 SECONDS WHEN NOT HOVERED, NOT DRAGGING, & NOT FLIPPED
+  // ROTATES EVERY 4 SECONDS WHEN NOT HOVERED & NOT FLIPPED; PAUSES ON HOVER
   useEffect(() => {
     if (isHovered || isDragging || isFlipped || projectsList.length <= 1) return;
 
@@ -33,7 +33,6 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
   const activeProject = projectsList[currentIndex] || projectsList[0];
 
   const handleTileClick = () => {
-    // Only flip if the user clicked without dragging
     if (!isDragging) {
       setIsFlipped((prev) => !prev);
     }
@@ -44,10 +43,8 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
     const velocityThreshold = 200;
 
     if (info.offset.x < -swipeThreshold || info.velocity.x < -velocityThreshold) {
-      // Swiped Left -> Next Project
       setCurrentIndex((prev) => (prev + 1) % projectsList.length);
     } else if (info.offset.x > swipeThreshold || info.velocity.x > velocityThreshold) {
-      // Swiped Right -> Previous Project
       setCurrentIndex((prev) => (prev - 1 + projectsList.length) % projectsList.length);
     }
 
@@ -65,8 +62,12 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
     <div
       className="projects-tile-container"
       onClick={handleTileClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => {
+        if (window.matchMedia('(hover: hover)').matches) setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        if (window.matchMedia('(hover: hover)').matches) setIsHovered(false);
+      }}
       style={{
         width: '100%',
         height: '100%',
@@ -85,7 +86,7 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
           transformStyle: 'preserve-3d'
         }}
       >
-        {/* FRONT FACE: SWIPEABLE / DRAGGABLE MINIMALIST CAROUSEL */}
+        {/* FRONT FACE: CLEAN MINIMALIST CAROUSEL */}
         <div
           className="cube-face cube-face-front"
           style={{
