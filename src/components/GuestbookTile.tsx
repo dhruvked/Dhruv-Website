@@ -20,21 +20,44 @@ const INITIAL_PINGS: VisitorPing[] = [
   { id: '4', author: 'Priyanshu', message: 'Ultra slick dark theme!', time: '2h ago' }
 ];
 
+const STORAGE_KEY_PINGS = 'dhruv_portfolio_guestbook_pings';
+
 export const GuestbookTile: React.FC<GuestbookTileProps> = ({ accentColor = '#ff6b00' }) => {
-  const [pings, setPings] = useState<VisitorPing[]>(INITIAL_PINGS);
+  const [pings, setPings] = useState<VisitorPing[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_PINGS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return INITIAL_PINGS;
+  });
+
   const [visitorCount, setVisitorCount] = useState<number>(1428);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
   const [authorInput, setAuthorInput] = useState('');
   const [messageInput, setMessageInput] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Live Visitor Counter Increment Simulation
+  // Save pings to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_PINGS, JSON.stringify(pings));
+    } catch (e) {}
+  }, [pings]);
+
+  // Live Visitor Counter Simulation
   useEffect(() => {
     const timer = setInterval(() => {
-      setVisitorCount((prev) => prev + Math.floor(Math.random() * 2));
-    }, 12000);
+      setVisitorCount((prev) => prev + 1);
+    }, 15000);
     return () => clearInterval(timer);
   }, []);
+
+  const handleTileClick = () => {
+    setIsFlipped((prev) => !prev);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,13 +80,13 @@ export const GuestbookTile: React.FC<GuestbookTileProps> = ({ accentColor = '#ff
     setTimeout(() => {
       setIsSubmitted(false);
       setIsFlipped(false);
-    }, 1200);
+    }, 1000);
   };
 
   return (
     <div
       className="guestbook-tile-container"
-      onClick={() => setIsFlipped(!isFlipped)}
+      onClick={handleTileClick}
       style={{ width: '100%', height: '100%', position: 'relative', perspective: '1200px', cursor: 'pointer' }}
     >
       <motion.div
@@ -125,20 +148,20 @@ export const GuestbookTile: React.FC<GuestbookTileProps> = ({ accentColor = '#ff
               flex: 1,
               display: 'flex',
               flexDirection: 'column',
-              gap: '0.55rem',
-              margin: '0.6rem 0',
+              gap: '0.5rem',
+              margin: '0.5rem 0',
               overflowY: 'hidden',
               justifyContent: 'center'
             }}
           >
-            <AnimatePresence>
+            <AnimatePresence mode="popLayout">
               {pings.slice(0, 3).map((ping, idx) => (
                 <motion.div
                   key={ping.id}
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  initial={{ opacity: 0, y: 12, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3, delay: idx * 0.08 }}
+                  transition={{ duration: 0.35, delay: idx * 0.06 }}
                   style={{
                     background: 'rgba(255, 255, 255, 0.02)',
                     border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -158,7 +181,7 @@ export const GuestbookTile: React.FC<GuestbookTileProps> = ({ accentColor = '#ff
                       {ping.time}
                     </span>
                   </div>
-                  <p style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.75)', fontFamily: 'var(--font-satoshi)', margin: 0, lineHeight: 1.35 }}>
+                  <p style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.78)', fontFamily: 'var(--font-satoshi)', margin: 0, lineHeight: 1.35 }}>
                     "{ping.message}"
                   </p>
                 </motion.div>
@@ -178,9 +201,10 @@ export const GuestbookTile: React.FC<GuestbookTileProps> = ({ accentColor = '#ff
           </div>
         </div>
 
-        {/* BACK FACE: MINIMAL TEXT INPUT FORM */}
+        {/* BACK FACE: MINIMAL TEXT INPUT FORM (STOP PROPAGATION PREVENTS ACCIDENTAL FLIPS) */}
         <div
           className="cube-face cube-face-side"
+          onClick={(e) => e.stopPropagation()}
           style={{
             position: 'absolute',
             inset: 0,
@@ -198,7 +222,6 @@ export const GuestbookTile: React.FC<GuestbookTileProps> = ({ accentColor = '#ff
             background: '#07090e',
             overflow: 'hidden'
           }}
-          onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', paddingBottom: '0.6rem' }}>
@@ -210,7 +233,7 @@ export const GuestbookTile: React.FC<GuestbookTileProps> = ({ accentColor = '#ff
             </span>
           </div>
 
-          {/* Minimal Form */}
+          {/* Form / Success Feedback */}
           {isSubmitted ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: accentColor }}>
               <CheckCircle2 size={28} />
@@ -227,6 +250,7 @@ export const GuestbookTile: React.FC<GuestbookTileProps> = ({ accentColor = '#ff
                   maxLength={30}
                   value={authorInput}
                   onChange={(e) => setAuthorInput(e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
                   style={{
                     width: '100%',
                     background: 'rgba(255, 255, 255, 0.03)',
@@ -248,6 +272,7 @@ export const GuestbookTile: React.FC<GuestbookTileProps> = ({ accentColor = '#ff
                   rows={2}
                   value={messageInput}
                   onChange={(e) => setMessageInput(e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
                   style={{
                     width: '100%',
                     background: 'rgba(255, 255, 255, 0.03)',
@@ -265,6 +290,7 @@ export const GuestbookTile: React.FC<GuestbookTileProps> = ({ accentColor = '#ff
 
               <button
                 type="submit"
+                onClick={(e) => e.stopPropagation()}
                 style={{
                   background: accentColor,
                   border: 'none',
@@ -291,7 +317,10 @@ export const GuestbookTile: React.FC<GuestbookTileProps> = ({ accentColor = '#ff
           {/* Footer Back Instruction Bar */}
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.4rem', textAlign: 'center' }}>
             <button
-              onClick={() => setIsFlipped(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFlipped(false);
+              }}
               style={{ background: 'transparent', border: 'none', color: 'rgba(255, 255, 255, 0.45)', fontFamily: 'var(--font-mono)', fontSize: '0.62rem', cursor: 'pointer' }}
             >
               CANCEL / FLIP BACK TO WALL ↺

@@ -1,70 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ASYMMETRICAL_GRID_TILES, type TileData } from '../data/portfolioData';
+import { type TileData } from '../data/portfolioData';
+import { LayoutStore } from '../data/layoutStore';
 import { TileCube } from './TileCube';
 import { GridBuilderStudio } from './GridBuilderStudio';
 
-const STORAGE_KEY = 'dhruv_portfolio_grid_layout_v14';
-
 export const MonolithicGrid: React.FC = () => {
-  const [tiles, setTiles] = useState<TileData[]>(() => {
-    try {
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v1');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v2');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v3');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v4');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v5');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v6');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v7');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v8');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v9');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v10');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v11');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v12');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v13');
-
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length >= 3) {
-          return parsed;
-        }
-      }
-    } catch (e) {
-      console.warn('Failed to load saved layout from localStorage', e);
-    }
-    return ASYMMETRICAL_GRID_TILES;
-  });
-
+  const [tiles, setTiles] = useState<TileData[]>(() => LayoutStore.getLayout());
   const [selectedTileId, setSelectedTileId] = useState<string | null>('hero-split-bio');
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // Auto-save tile layout state
+  // Automatically persist layout to localStorage and LayoutStore on every tile drag/resize change
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(tiles));
-    } catch (e) {
-      console.warn('Failed to save layout to localStorage', e);
-    }
+    LayoutStore.updateLayout(tiles);
   }, [tiles]);
 
+  const handleSaveLayout = () => {
+    LayoutStore.updateLayout(tiles);
+  };
+
   const handleResetLayout = () => {
-    setTiles(ASYMMETRICAL_GRID_TILES);
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v1');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v2');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v3');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v4');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v5');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v6');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v7');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v8');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v9');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v10');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v11');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v12');
-      localStorage.removeItem('dhruv_portfolio_grid_layout_v13');
-    } catch (e) {}
+    const defaultTiles = LayoutStore.resetToDefault();
+    setTiles(defaultTiles);
   };
 
   const handleAddTile = () => {
@@ -85,13 +41,14 @@ export const MonolithicGrid: React.FC = () => {
         details: ['Custom specification point']
       }
     };
-    setTiles([...tiles, newTile]);
+    const updated = [...tiles, newTile];
+    setTiles(updated);
     setSelectedTileId(newId);
   };
 
   const handleUpdateTile = (id: string, updatedFields: Partial<TileData>) => {
-    setTiles(
-      tiles.map((t) => (t.id === id ? { ...t, ...updatedFields } : t))
+    setTiles((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, ...updatedFields } : t))
     );
   };
 
@@ -119,8 +76,8 @@ export const MonolithicGrid: React.FC = () => {
 
   const handleUpdateGridSpan = (id: string, newSpan: { colStart?: number; rowStart?: number; colSpan: number; rowSpan: number }) => {
     if (checkCollision(id, newSpan)) {
-      setTiles(
-        tiles.map((t) => {
+      setTiles((prev) =>
+        prev.map((t) => {
           if (t.id === id) {
             return {
               ...t,
@@ -137,8 +94,8 @@ export const MonolithicGrid: React.FC = () => {
       return;
     }
 
-    setTiles(
-      tiles.map((t) => (t.id === id ? { ...t, gridSpan: newSpan } : t))
+    setTiles((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, gridSpan: newSpan } : t))
     );
   };
 
@@ -196,6 +153,7 @@ export const MonolithicGrid: React.FC = () => {
         onUpdateTile={handleUpdateTile}
         onDeleteTile={handleDeleteTile}
         onResetLayout={handleResetLayout}
+        onSaveLayout={handleSaveLayout}
       />
 
       {/* 12-Row Page Snap Container */}

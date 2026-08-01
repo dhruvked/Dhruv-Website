@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Copy, Check, Sliders, ChevronRight, ChevronLeft, RotateCcw } from 'lucide-react';
+import { Plus, Trash2, Copy, Check, Sliders, ChevronRight, ChevronLeft, RotateCcw, Save } from 'lucide-react';
 import type { TileData } from '../data/portfolioData';
 
 interface GridBuilderStudioProps {
@@ -10,6 +10,7 @@ interface GridBuilderStudioProps {
   onUpdateTile: (id: string, updatedTile: Partial<TileData>) => void;
   onDeleteTile: (id: string) => void;
   onResetLayout: () => void;
+  onSaveLayout?: () => void;
 }
 
 export const GridBuilderStudio: React.FC<GridBuilderStudioProps> = ({
@@ -19,10 +20,12 @@ export const GridBuilderStudio: React.FC<GridBuilderStudioProps> = ({
   onAddTile,
   onUpdateTile,
   onDeleteTile,
-  onResetLayout
+  onResetLayout,
+  onSaveLayout
 }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const activeTile = tiles.find((t) => t.id === selectedTileId);
 
@@ -31,6 +34,14 @@ export const GridBuilderStudio: React.FC<GridBuilderStudioProps> = ({
     navigator.clipboard.writeText(jsonString);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSaveClick = () => {
+    if (onSaveLayout) {
+      onSaveLayout();
+    }
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
@@ -91,8 +102,8 @@ export const GridBuilderStudio: React.FC<GridBuilderStudioProps> = ({
               <h3 style={{ fontSize: '0.95rem', color: '#ffffff', fontFamily: 'var(--font-heading)' }}>
                 TILE BUILDER STUDIO
               </h3>
-              <span style={{ fontSize: '0.68rem', color: '#10b981', fontFamily: 'var(--font-mono)' }}>
-                ● EDITS AUTO-SAVED
+              <span style={{ fontSize: '0.68rem', color: saved ? '#10b981' : 'var(--accent-orange)', fontFamily: 'var(--font-mono)' }}>
+                {saved ? '✓ LAYOUT SAVED!' : '● CUSTOM BUILDER'}
               </span>
             </div>
 
@@ -101,31 +112,55 @@ export const GridBuilderStudio: React.FC<GridBuilderStudioProps> = ({
             </span>
           </div>
 
-          {/* Quick Action Buttons */}
-          <div style={{ display: 'flex', gap: '0.4rem' }}>
+          {/* Quick Action Buttons Toolbar */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
+            <button
+              onClick={handleSaveClick}
+              className="btn"
+              style={{
+                background: '#ff6b00',
+                color: '#000000',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: '0.74rem',
+                padding: '0.45rem',
+                justifyContent: 'center',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem'
+              }}
+            >
+              {saved ? <Check size={13} /> : <Save size={13} />}
+              <span>{saved ? 'Saved!' : 'Save Layout'}</span>
+            </button>
+
             <button
               onClick={onAddTile}
-              className="btn btn-primary"
-              style={{ flex: 1, fontSize: '0.74rem', padding: '0.4rem', justifyContent: 'center' }}
+              className="btn btn-outline"
+              style={{ fontSize: '0.74rem', padding: '0.45rem', justifyContent: 'center', borderColor: 'rgba(255, 255, 255, 0.1)' }}
             >
               <Plus size={13} />
               <span>Add Tile</span>
             </button>
+          </div>
 
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
             <button
               onClick={handleExportJSON}
               className="btn btn-outline"
-              style={{ fontSize: '0.74rem', padding: '0.4rem', borderColor: 'var(--border-hairline)' }}
+              style={{ fontSize: '0.74rem', padding: '0.4rem', justifyContent: 'center', borderColor: 'var(--border-hairline)' }}
               title="Copy JSON Layout to Clipboard"
             >
               {copied ? <Check size={13} style={{ color: '#10b981' }} /> : <Copy size={13} />}
-              <span>{copied ? 'Copied!' : 'Export'}</span>
+              <span>{copied ? 'Copied!' : 'Export JSON'}</span>
             </button>
 
             <button
               onClick={onResetLayout}
               className="btn btn-outline"
-              style={{ fontSize: '0.74rem', padding: '0.4rem', borderColor: 'var(--border-hairline)', color: '#ef4444' }}
+              style={{ fontSize: '0.74rem', padding: '0.4rem', justifyContent: 'center', borderColor: 'var(--border-hairline)', color: '#ef4444' }}
               title="Reset Layout to Default"
             >
               <RotateCcw size={13} />

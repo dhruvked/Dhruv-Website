@@ -18,11 +18,11 @@ export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
     return () => clearInterval(timer);
   }, []);
 
-  // Animation frame loop for clouds, steam, Zzz, and typing arms
+  // Animation frame loop for Kolkata scene (Taxi movement, water ripples, stars)
   useEffect(() => {
     const pixelTimer = setInterval(() => {
-      setFrame((prev) => (prev + 1) % 12);
-    }, 220);
+      setFrame((prev) => (prev + 1) % 24);
+    }, 180);
 
     return () => clearInterval(pixelTimer);
   }, []);
@@ -36,7 +36,6 @@ export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
   const isDaytime = hours >= 6 && hours < 18;
   const isSunset = hours >= 18 && hours < 20;
   const isNighttime = hours >= 20 || hours < 6;
-  const isLateNight = hours >= 23 || hours < 6;
 
   const secondDeg = seconds * 6;
   const minuteDeg = minutes * 6 + seconds * 0.1;
@@ -221,7 +220,7 @@ export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
           </div>
         </div>
 
-        {/* BACK FACE: RICH 8-BIT SCENE (WINDOW, LAMP, STEAM / ZZZ, TYPING DEV) */}
+        {/* BACK FACE: ICONIC KOLKATA 8-BIT ANIMATION (HOWRAH BRIDGE + YELLOW TAXI + HOOGHLY RIVER) */}
         <div
           className="cube-face cube-face-side"
           style={{
@@ -244,13 +243,13 @@ export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
             background: '#07090e'
           }}
         >
-          {/* Location */}
+          {/* Location Header */}
           <div
             style={{
               fontSize: '0.75rem',
               fontFamily: 'var(--font-clash)',
               color: accentColor,
-              fontWeight: 600,
+              fontWeight: 700,
               letterSpacing: '0.14em',
               textTransform: 'uppercase'
             }}
@@ -258,11 +257,11 @@ export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
             KOLKATA, INDIA
           </div>
 
-          {/* 8-Bit Pixel Scene (Window + Lamp + Steam/Zzz + Dev) */}
+          {/* 8-Bit Pixel Scene Canvas (Howrah Bridge + Yellow Taxi + Hooghly River) */}
           <div
             style={{
               width: '100%',
-              height: '68px',
+              height: '76px',
               position: 'relative',
               display: 'flex',
               alignItems: 'center',
@@ -270,130 +269,93 @@ export const ClockTile: React.FC<ClockTileProps> = ({ accentColor }) => {
               margin: '0.1rem 0'
             }}
           >
-            <svg width="100" height="68" viewBox="0 0 100 68" fill="none" style={{ shapeRendering: 'crispEdges' }}>
-              {/* PIXEL BACKGROUND WINDOW */}
-              <rect x="6" y="4" width="22" height="18" fill="#0f172a" rx="1" />
+            <svg
+              width="140"
+              height="76"
+              viewBox="0 0 100 54"
+              fill="none"
+              style={{ shapeRendering: 'crispEdges', maxWidth: '100%', maxHeight: '100%' }}
+            >
+              {/* SKY BACKGROUND */}
               <rect
-                x="7"
-                y="5"
-                width="20"
-                height="16"
+                x="0"
+                y="0"
+                width="100"
+                height="34"
                 fill={isDaytime ? '#38bdf8' : isSunset ? '#c084fc' : '#090d16'}
               />
 
+              {/* Day Clouds or Night Moon/Stars */}
               {isDaytime && (
                 <>
-                  <rect x={7 + ((frame * 2) % 16)} y="8" width="6" height="2" fill="#ffffff" opacity="0.9" />
-                  <rect x={12 + ((frame * 2 + 6) % 14)} y="12" width="5" height="2" fill="#ffffff" opacity="0.8" />
+                  <rect x={10 + ((frame * 2) % 60)} y="6" width="12" height="3" fill="#ffffff" opacity="0.85" />
+                  <rect x={40 + ((frame * 2 + 10) % 50)} y="12" width="10" height="3" fill="#ffffff" opacity="0.75" />
                 </>
               )}
 
               {isSunset && (
-                <rect x="15" y="14" width="4" height="4" fill="#ff6b00" />
+                <rect x="74" y="10" width="8" height="8" fill="#ff6b00" rx="4" />
               )}
 
               {isNighttime && (
                 <>
-                  <rect x="22" y="8" width="3" height="3" fill="#fef08a" />
-                  <rect x="10" y="7" width="1.5" height="1.5" fill="#ffffff" opacity={frame % 2 === 0 ? 1 : 0.3} />
-                  <rect x="18" y="15" width="1.5" height="1.5" fill="#ffffff" opacity={frame % 3 === 0 ? 1 : 0.3} />
+                  <rect x="80" y="6" width="5" height="5" fill="#fef08a" />
+                  <rect x="12" y="8" width="1.5" height="1.5" fill="#ffffff" opacity={frame % 2 === 0 ? 1 : 0.3} />
+                  <rect x="35" y="14" width="1.5" height="1.5" fill="#ffffff" opacity={frame % 3 === 0 ? 1 : 0.3} />
+                  <rect x="62" y="7" width="1.5" height="1.5" fill="#ffffff" opacity={frame % 4 === 0 ? 1 : 0.3} />
                 </>
               )}
 
-              <rect x="16" y="5" width="2" height="16" fill="#1e293b" />
-              <rect x="7" y="12" width="20" height="2" fill="#1e293b" />
+              {/* 🌁 HOWRAH BRIDGE STEEL TRUSS STRUCTURE */}
+              {/* Left Main Tower */}
+              <rect x="18" y="4" width="4" height="30" fill="#475569" />
+              <rect x="16" y="2" width="8" height="3" fill="#334155" />
+              <line x1="20" y1="4" x2="36" y2="34" stroke="#64748b" strokeWidth="1.5" />
 
-              {/* DESK LAMP & LIGHT CONE */}
-              <rect x="72" y="16" width="2" height="16" fill="#475569" />
-              <rect x="68" y="14" width="8" height="3" fill={isNighttime ? '#fef08a' : '#64748b'} />
+              {/* Right Main Tower */}
+              <rect x="78" y="4" width="4" height="30" fill="#475569" />
+              <rect x="76" y="2" width="8" height="3" fill="#334155" />
+              <line x1="80" y1="4" x2="64" y2="34" stroke="#64748b" strokeWidth="1.5" />
 
-              {isNighttime && (
-                <polygon points="68,17 90,44 48,44" fill="rgba(254, 240, 138, 0.14)" />
-              )}
+              {/* Bridge Cantilever Trusses */}
+              <line x1="20" y1="6" x2="80" y2="6" stroke="#475569" strokeWidth="1.5" />
+              <line x1="20" y1="12" x2="80" y2="12" stroke="#64748b" strokeWidth="1" />
+              <line x1="20" y1="22" x2="80" y2="22" stroke="#64748b" strokeWidth="1" />
 
-              {/* Monitor Screen */}
-              <rect x="36" y="16" width="30" height="20" fill="#1e293b" rx="2" />
-              <rect x="38" y="18" width="26" height="16" fill="#0f172a" />
-              <rect x="40" y="20" width={frame % 2 === 0 ? '14' : '8'} height="2" fill={accentColor} />
-              <rect x="40" y="24" width={frame % 3 === 0 ? '18' : '10'} height="2" fill="#38bdf8" />
-              <rect x="40" y="28" width={frame % 2 === 1 ? '12' : '6'} height="2" fill="#10b981" />
+              {/* Diagonal Cross Supports */}
+              <line x1="20" y1="6" x2="50" y2="22" stroke="#475569" strokeWidth="1" />
+              <line x1="80" y1="6" x2="50" y2="22" stroke="#475569" strokeWidth="1" />
 
-              {/* Monitor Stand */}
-              <rect x="49" y="36" width="4" height="4" fill="#475569" />
-              <rect x="45" y="40" width="12" height="2" fill="#475569" />
+              {/* Bridge Road Deck */}
+              <rect x="0" y="33" width="100" height="3" fill="#1e293b" />
+              <rect x="0" y="36" width="100" height="1" fill="#ff6b00" opacity="0.6" />
 
-              {/* Desk */}
-              <rect x="4" y="42" width="92" height="3" fill="#334155" />
-              <rect x="8" y="45" width="4" height="20" fill="#1e293b" />
-              <rect x="88" y="45" width="4" height="20" fill="#1e293b" />
+              {/* 🚊 ANIMATED KOLKATA YELLOW TAXI CAB */}
+              <g transform={`translate(${(frame * 4) % 110 - 15}, 26)`}>
+                {/* Taxi Yellow Body */}
+                <rect x="0" y="3" width="14" height="5" fill="#facc15" rx="1" />
+                {/* Black Roof & Stripes */}
+                <rect x="3" y="0" width="8" height="4" fill="#0f172a" />
+                <rect x="4" y="1" width="6" height="2" fill="#38bdf8" opacity="0.9" />
+                {/* Wheels */}
+                <rect x="2" y="7" width="2.5" height="2.5" fill="#ffffff" />
+                <rect x="9.5" y="7" width="2.5" height="2.5" fill="#ffffff" />
+                {/* Headlight */}
+                <rect x="13" y="4" width="1.5" height="2" fill={isNighttime ? '#fef08a' : '#ff6b00'} />
+              </g>
 
-              {/* COFFEE STEAM vs FLOATING ZZZ BUBBLES */}
-              {!isLateNight ? (
-                <>
-                  <rect x="22" y="36" width="6" height="6" fill="#f87171" rx="1" />
-                  <rect x="20" y="38" width="2" height="3" fill="#f87171" />
-                  <rect x="23" y={32 - (frame % 3)} width="1" height="2" fill="#ffffff" opacity="0.6" />
-                  <rect x="26" y={30 - ((frame + 1) % 3)} width="1" height="2" fill="#ffffff" opacity="0.6" />
-                </>
-              ) : (
-                <>
-                  <text
-                    x={68 + (frame % 3)}
-                    y={22 - (frame % 4) * 3}
-                    fill="#c084fc"
-                    fontSize="7"
-                    fontFamily="monospace"
-                    fontWeight="bold"
-                    opacity={1 - (frame % 4) * 0.2}
-                  >
-                    Z
-                  </text>
-                  <text
-                    x={74 + (frame % 2)}
-                    y={16 - (frame % 3) * 3}
-                    fill="#a855f7"
-                    fontSize="5"
-                    fontFamily="monospace"
-                    opacity={0.8}
-                  >
-                    z
-                  </text>
-                </>
-              )}
+              {/* 🌊 HOOGHLY RIVER WATER & ANIMATED RIPPLES */}
+              <rect x="0" y="37" width="100" height="17" fill="#0f172a" />
+              <rect x="0" y="38" width="100" height="16" fill={isDaytime ? '#1e3a8a' : '#090d16'} />
 
-              {/* Developer Character */}
-              <rect
-                x="64"
-                y={isLateNight ? 26 : 24}
-                width="10"
-                height="10"
-                fill="#f87171"
-                rx="2"
-              />
-              <rect x="62" y="34" width="14" height="10" fill={isLateNight ? '#475569' : '#3b82f6'} />
-
-              {!isLateNight ? (
-                frame % 2 === 0 ? (
-                  <>
-                    <rect x="56" y="35" width="8" height="3" fill="#f87171" />
-                    <rect x="54" y="37" width="6" height="3" fill="#f87171" />
-                  </>
-                ) : (
-                  <>
-                    <rect x="56" y="37" width="8" height="3" fill="#f87171" />
-                    <rect x="52" y="35" width="6" height="3" fill="#f87171" />
-                  </>
-                )
-              ) : (
-                <rect x="54" y="38" width="12" height="3" fill="#f87171" />
-              )}
-
-              {/* Keyboard */}
-              <rect x="44" y="40" width="14" height="2" fill="#94a3b8" />
+              {/* Water Ripples */}
+              <rect x={(frame * 3) % 80} y="41" width="12" height="1" fill="#38bdf8" opacity="0.7" />
+              <rect x={(frame * 2 + 30) % 70} y="46" width="16" height="1" fill="#38bdf8" opacity="0.5" />
+              <rect x={(frame * 3 + 15) % 85} y="50" width="10" height="1" fill="#38bdf8" opacity="0.6" />
             </svg>
           </div>
 
-          {/* Local Digital Time */}
+          {/* Local Digital Time Readout */}
           <div
             style={{
               fontSize: '1.9rem',

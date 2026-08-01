@@ -8,7 +8,7 @@ import { ClockTile } from './ClockTile';
 import { TerminalTile } from './TerminalTile';
 import { ProjectsTile } from './ProjectsTile';
 import { TechStackTile } from './TechStackTile';
-import { GuestbookTile } from './GuestbookTile';
+import { DeveloperDeskTile } from './DeveloperDeskTile';
 
 interface TileCubeProps {
   tile: TileData;
@@ -542,8 +542,8 @@ export const TileCube: React.FC<TileCubeProps> = ({
     );
   }
 
-  // Dedicated Visitor Guestbook Tile Renderer
-  if (tile.id === 'guestbook-tile') {
+  // Dedicated Developer Desk Stream Renderer
+  if (tile.id === 'developer-desk') {
     return (
       <div
         className={`cube-wrapper ${isSelected ? 'selected-tile-active' : ''}`}
@@ -566,7 +566,7 @@ export const TileCube: React.FC<TileCubeProps> = ({
           <span>DRAG TILE</span>
         </div>
 
-        <GuestbookTile accentColor={accentColor} />
+        <DeveloperDeskTile accentColor={accentColor} />
 
         <div
           onMouseDown={handleResizeStart}

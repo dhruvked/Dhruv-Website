@@ -85,13 +85,13 @@ export const ASYMMETRICAL_GRID_TILES: TileData[] = [
     }
   },
   {
-    id: 'guestbook-tile',
+    id: 'developer-desk',
     gridSpan: { colStart: 5, rowStart: 1, colSpan: 7, rowSpan: 4 },
     isRotating: true,
-    type: 'guestbook',
+    type: 'desk',
     front: {
-      title: 'Visitor Wall',
-      subtitle: 'LIVE PINGS',
+      title: 'Dev Desk Stream',
+      subtitle: 'LIVE WORKSPACE',
       accentColor: '#ff6b00'
     }
   },
