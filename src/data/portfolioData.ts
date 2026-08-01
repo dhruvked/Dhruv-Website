@@ -85,13 +85,13 @@ export const ASYMMETRICAL_GRID_TILES: TileData[] = [
     }
   },
   {
-    id: 'ping-signal',
+    id: 'guestbook-ping',
     gridSpan: { colStart: 1, rowStart: 5, colSpan: 4, rowSpan: 2 },
     isRotating: false,
-    type: 'ping',
+    type: 'guestbook',
     front: {
-      title: 'Quick Ping',
-      subtitle: 'SIGNAL',
+      title: 'Ping Dhruv',
+      subtitle: 'QUICK GUESTBOOK',
       accentColor: '#ff6b00'
     }
   },
