@@ -85,19 +85,19 @@ export const ASYMMETRICAL_GRID_TILES: TileData[] = [
     }
   },
   {
-    id: 'guestbook-ping',
-    gridSpan: { colStart: 1, rowStart: 5, colSpan: 4, rowSpan: 2 },
-    isRotating: false,
+    id: 'guestbook-tile',
+    gridSpan: { colStart: 5, rowStart: 1, colSpan: 7, rowSpan: 4 },
+    isRotating: true,
     type: 'guestbook',
     front: {
-      title: 'Ping Dhruv',
-      subtitle: 'QUICK GUESTBOOK',
+      title: 'Visitor Wall',
+      subtitle: 'LIVE PINGS',
       accentColor: '#ff6b00'
     }
   },
   {
     id: 'terminal-sandbox',
-    gridSpan: { colStart: 5, rowStart: 1, colSpan: 6, rowSpan: 6 },
+    gridSpan: { colStart: 5, rowStart: 5, colSpan: 7, rowSpan: 8 },
     isRotating: false,
     type: 'terminal',
     front: {
@@ -108,7 +108,7 @@ export const ASYMMETRICAL_GRID_TILES: TileData[] = [
   },
   {
     id: 'featured-projects',
-    gridSpan: { colStart: 1, rowStart: 7, colSpan: 12, rowSpan: 6 },
+    gridSpan: { colStart: 1, rowStart: 5, colSpan: 4, rowSpan: 8 },
     isRotating: false,
     type: 'projects',
     front: {

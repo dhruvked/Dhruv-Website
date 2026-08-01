@@ -1,205 +1,314 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Send, CheckCircle2, MessageSquare, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MessageSquare, Send, CheckCircle2, RotateCw } from 'lucide-react';
 
 interface GuestbookTileProps {
   accentColor?: string;
 }
 
+interface VisitorPing {
+  id: string;
+  author: string;
+  message: string;
+  time: string;
+}
+
+const INITIAL_PINGS: VisitorPing[] = [
+  { id: '1', author: 'Alex', message: 'Loved the 3D Blender pipeline!', time: '2m ago' },
+  { id: '2', author: 'Sam', message: 'Awesome portfolio layout & clock!', time: '12m ago' },
+  { id: '3', author: 'Marcus', message: 'Clean RAG architecture specs.', time: '1h ago' },
+  { id: '4', author: 'Priyanshu', message: 'Ultra slick dark theme!', time: '2h ago' }
+];
+
 export const GuestbookTile: React.FC<GuestbookTileProps> = ({ accentColor = '#ff6b00' }) => {
-  const [senderName, setSenderName] = useState('');
-  const [message, setMessage] = useState('');
+  const [pings, setPings] = useState<VisitorPing[]>(INITIAL_PINGS);
+  const [visitorCount, setVisitorCount] = useState<number>(1428);
+  const [isFlipped, setIsFlipped] = useState<boolean>(false);
+  const [authorInput, setAuthorInput] = useState('');
+  const [messageInput, setMessageInput] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isSending, setIsSending] = useState(false);
+
+  // Live Visitor Counter Increment Simulation
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setVisitorCount((prev) => prev + Math.floor(Math.random() * 2));
+    }, 12000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    e.stopPropagation();
 
-    setIsSending(true);
+    if (!messageInput.trim()) return;
 
-    // Simulate instant network transmission
+    const newPing: VisitorPing = {
+      id: Date.now().toString(),
+      author: authorInput.trim() || 'Anonymous',
+      message: messageInput.trim(),
+      time: 'Just now'
+    };
+
+    setPings([newPing, ...pings]);
+    setAuthorInput('');
+    setMessageInput('');
+    setIsSubmitted(true);
+
     setTimeout(() => {
-      setIsSending(false);
-      setIsSubmitted(true);
-      setSenderName('');
-      setMessage('');
-
-      // Auto-reset after 5 seconds
-      setTimeout(() => {
-        setIsSubmitted(false);
-      }, 5000);
-    }, 600);
+      setIsSubmitted(false);
+      setIsFlipped(false);
+    }, 1200);
   };
 
   return (
     <div
-      style={{
-        width: '100%',
-        height: '100%',
-        background: '#07090e',
-        border: '1px solid rgba(255, 255, 255, 0.04)',
-        borderTop: `2px solid ${accentColor}`,
-        borderRadius: '8px',
-        padding: '1.1rem 1.2rem',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        overflow: 'hidden',
-        position: 'relative'
-      }}
+      className="guestbook-tile-container"
+      onClick={() => setIsFlipped(!isFlipped)}
+      style={{ width: '100%', height: '100%', position: 'relative', perspective: '1200px', cursor: 'pointer' }}
     >
-      {/* Header Bar */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', paddingBottom: '0.55rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-          <MessageSquare size={13} style={{ color: accentColor }} />
-          <span style={{ fontSize: '0.8rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 700, letterSpacing: '0.04em' }}>
-            PING DHRUV
-          </span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: '#10b981' }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
-          <span>LIVE INBOX</span>
-        </div>
-      </div>
-
-      {/* BODY CONTENT */}
-      {isSubmitted ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+      <motion.div
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{ duration: 0.75, type: 'spring', stiffness: 75, damping: 15 }}
+        style={{
+          width: '100%',
+          height: '100%',
+          position: 'relative',
+          transformStyle: 'preserve-3d'
+        }}
+      >
+        {/* FRONT FACE: FLOATING MESSAGES & LIVE VISITOR COUNTER */}
+        <div
+          className="cube-face cube-face-front"
           style={{
-            flex: 1,
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '1.1rem 1.2rem',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.6rem',
-            textAlign: 'center',
-            padding: '1rem 0'
+            justifyContent: 'space-between',
+            background: '#07090e',
+            overflow: 'hidden'
           }}
         >
-          <CheckCircle2 size={28} style={{ color: accentColor }} />
-          <div>
-            <h4 style={{ fontSize: '0.95rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 700, marginBottom: '0.2rem' }}>
-              PING DELIVERED!
-            </h4>
-            <p style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.7)', fontFamily: 'var(--font-satoshi)' }}>
-              Thanks for stopping by. Your note has been sent.
-            </p>
-          </div>
-          <button
-            onClick={() => setIsSubmitted(false)}
+          {/* Top Header: Live Visitor Counter */}
+          <div
             style={{
-              background: 'transparent',
-              border: 'none',
-              color: accentColor,
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.62rem',
-              cursor: 'pointer',
-              marginTop: '0.4rem',
-              textDecoration: 'underline'
-            }}
-          >
-            Send another message
-          </button>
-        </motion.div>
-      ) : (
-        <form onSubmit={handleSubmit} style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.6rem', margin: '0.4rem 0' }}>
-          {/* Input 1: Name / Email */}
-          <div>
-            <input
-              type="text"
-              placeholder="Your Name or Email (Optional)"
-              value={senderName}
-              onChange={(e) => setSenderName(e.target.value)}
-              style={{
-                width: '100%',
-                background: 'rgba(255, 255, 255, 0.025)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '4px',
-                padding: '0.4rem 0.65rem',
-                fontSize: '0.72rem',
-                fontFamily: 'var(--font-satoshi)',
-                color: '#ffffff',
-                outline: 'none',
-                transition: 'border-color 0.2s ease'
-              }}
-              onFocus={(e) => (e.target.style.borderColor = accentColor)}
-              onBlur={(e) => (e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
-            />
-          </div>
-
-          {/* Input 2: Message Text */}
-          <div>
-            <textarea
-              required
-              rows={2}
-              placeholder="Leave a quick note..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              style={{
-                width: '100%',
-                background: 'rgba(255, 255, 255, 0.025)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '4px',
-                padding: '0.4rem 0.65rem',
-                fontSize: '0.72rem',
-                fontFamily: 'var(--font-satoshi)',
-                color: '#ffffff',
-                outline: 'none',
-                resize: 'none',
-                transition: 'border-color 0.2s ease'
-              }}
-              onFocus={(e) => (e.target.style.borderColor = accentColor)}
-              onBlur={(e) => (e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)')}
-            />
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isSending || !message.trim()}
-            style={{
-              width: '100%',
-              background: message.trim() ? accentColor : 'rgba(255, 255, 255, 0.05)',
-              border: `1px solid ${message.trim() ? accentColor : 'rgba(255, 255, 255, 0.08)'}`,
-              borderRadius: '4px',
-              padding: '0.4rem 0.8rem',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.4rem',
-              color: message.trim() ? '#ffffff' : 'rgba(255, 255, 255, 0.4)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              cursor: message.trim() ? 'pointer' : 'not-allowed',
-              transition: 'all 0.2s ease'
+              justifyContent: 'space-between',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+              paddingBottom: '0.6rem'
             }}
           >
-            {isSending ? (
-              <span>SENDING PING...</span>
-            ) : (
-              <>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <MessageSquare size={13} style={{ color: accentColor }} />
+              <span style={{ fontSize: '0.8rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 700, letterSpacing: '0.04em' }}>
+                VISITOR WALL
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: accentColor, fontWeight: 700 }}>
+              <span className="pulsing-live-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: accentColor }} />
+              <span>{visitorCount.toLocaleString()} VISITS</span>
+            </div>
+          </div>
+
+          {/* Floating Message Bubbles List */}
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.55rem',
+              margin: '0.6rem 0',
+              overflowY: 'hidden',
+              justifyContent: 'center'
+            }}
+          >
+            <AnimatePresence>
+              {pings.slice(0, 3).map((ping, idx) => (
+                <motion.div
+                  key={ping.id}
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3, delay: idx * 0.08 }}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.02)',
+                    border: '1px solid rgba(255, 255, 255, 0.06)',
+                    borderLeft: `2px solid ${accentColor}`,
+                    borderRadius: '4px',
+                    padding: '0.45rem 0.75rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.15rem'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 600 }}>
+                      {ping.author}
+                    </span>
+                    <span style={{ fontSize: '0.58rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.4)' }}>
+                      {ping.time}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.75)', fontFamily: 'var(--font-satoshi)', margin: 0, lineHeight: 1.35 }}>
+                    "{ping.message}"
+                  </p>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {/* Footer Action Prompt */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.45)' }}>
+              LIVE MESSAGE STREAM
+            </span>
+            <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: accentColor, fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <span>LEAVE A PING</span>
+              <RotateCw size={10} />
+            </span>
+          </div>
+        </div>
+
+        {/* BACK FACE: MINIMAL TEXT INPUT FORM */}
+        <div
+          className="cube-face cube-face-side"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            transform: 'rotateY(180deg)',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '1.2rem',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            background: '#07090e',
+            overflow: 'hidden'
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', paddingBottom: '0.6rem' }}>
+            <h3 style={{ fontSize: '1.1rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 700 }}>
+              LEAVE A QUICK PING
+            </h3>
+            <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: accentColor }}>
+              120 CHAR MAX
+            </span>
+          </div>
+
+          {/* Minimal Form */}
+          {isSubmitted ? (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: accentColor }}>
+              <CheckCircle2 size={28} />
+              <span style={{ fontSize: '0.82rem', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#ffffff' }}>
+                PING DELIVERED!
+              </span>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.6rem', margin: '0.4rem 0' }}>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Your Name (Optional)"
+                  maxLength={30}
+                  value={authorInput}
+                  onChange={(e) => setAuthorInput(e.target.value)}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '4px',
+                    padding: '0.4rem 0.65rem',
+                    color: '#ffffff',
+                    fontFamily: 'var(--font-satoshi)',
+                    fontSize: '0.78rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <div>
+                <textarea
+                  placeholder="Type your message..."
+                  maxLength={120}
+                  rows={2}
+                  value={messageInput}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '4px',
+                    padding: '0.4rem 0.65rem',
+                    color: '#ffffff',
+                    fontFamily: 'var(--font-satoshi)',
+                    fontSize: '0.78rem',
+                    outline: 'none',
+                    resize: 'none'
+                  }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                style={{
+                  background: accentColor,
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '0.45rem 0.8rem',
+                  color: '#000000',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.4rem',
+                  transition: 'opacity 0.2s ease'
+                }}
+              >
                 <span>SEND PING</span>
                 <Send size={11} />
-              </>
-            )}
-          </button>
-        </form>
-      )}
+              </button>
+            </form>
+          )}
 
-      {/* Footer Bar */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.35rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '0.6rem', fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.45)' }}>
-          DIRECT TELEMETRY
-        </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.6rem', fontFamily: 'var(--font-mono)', color: accentColor }}>
-          <Sparkles size={10} />
-          <span>RESPONDS &lt; 2 HRS</span>
+          {/* Footer Back Instruction Bar */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.4rem', textAlign: 'center' }}>
+            <button
+              onClick={() => setIsFlipped(false)}
+              style={{ background: 'transparent', border: 'none', color: 'rgba(255, 255, 255, 0.45)', fontFamily: 'var(--font-mono)', fontSize: '0.62rem', cursor: 'pointer' }}
+            >
+              CANCEL / FLIP BACK TO WALL ↺
+            </button>
+          </div>
         </div>
-      </div>
+      </motion.div>
+
+      <style>{`
+        .pulsing-live-dot {
+          animation: livePulse 2s infinite ease-in-out;
+        }
+        @keyframes livePulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(1.3); }
+        }
+      `}</style>
     </div>
   );
 };
