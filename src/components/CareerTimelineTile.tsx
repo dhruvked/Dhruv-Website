@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
-import { Briefcase, GraduationCap, Sparkles, Filter } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface TimelineItem {
   id: string;
   year: string;
   role: string;
-  company?: string;
-  category: 'web' | 'ai' | 'edu';
   description: string;
-  impactMetrics?: string[];
   skills: string[];
-  type: 'work' | 'education';
 }
 
 const TIMELINE_DATA: TimelineItem[] = [
@@ -18,41 +14,29 @@ const TIMELINE_DATA: TimelineItem[] = [
     id: 't1',
     year: '2024 – PRESENT',
     role: 'Senior Full-Stack & AI Engineer',
-    category: 'ai',
-    description: 'Architecting distributed multi-agent AI workflows, microservices, and React engines.',
-    impactMetrics: ['+250k API calls/day', 'Autonomous Agent Pipelines'],
-    skills: ['React', 'TypeScript', 'Python', 'AI Agents'],
-    type: 'work'
+    description: 'Architecting distributed multi-agent AI workflows, microservices, and web engines.',
+    skills: ['React', 'TypeScript', 'Python', 'AI Agents']
   },
   {
     id: 't2',
     year: '2022 – 2024',
     role: 'Full-Stack Systems Engineer',
-    category: 'web',
-    description: 'Built high-throughput APIs, database cache pipelines (Redis/PostgreSQL), and modern web platforms.',
-    impactMetrics: ['99.9% Uptime', '40% UX Speedup'],
-    skills: ['Node.js', 'Python', 'AWS', 'Docker'],
-    type: 'work'
+    description: 'Built high-throughput APIs, database cache pipelines (Redis/PostgreSQL), and web platforms.',
+    skills: ['Node.js', 'Python', 'AWS', 'Docker']
   },
   {
     id: 't3',
     year: '2021 – 2022',
     role: 'Software Engineering Intern',
-    category: 'web',
     description: 'Developed backend microservices, performance scripts, and open-source packages.',
-    impactMetrics: ['Open Source Packages', 'Microservice Optimization'],
-    skills: ['JavaScript', 'Python', 'Git'],
-    type: 'work'
+    skills: ['JavaScript', 'Python', 'Git']
   },
   {
     id: 't4',
     year: '2021',
     role: 'B.Tech Computer Science',
-    category: 'edu',
     description: 'Graduated with distinction; focused on distributed systems and algorithms.',
-    impactMetrics: ['Distinction Honors', 'Distributed Systems'],
-    skills: ['CS Fundamentals', 'Algorithms', 'OS'],
-    type: 'education'
+    skills: ['CS Fundamentals', 'Algorithms', 'OS']
   }
 ];
 
@@ -61,23 +45,24 @@ interface CareerTimelineTileProps {
 }
 
 export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentColor }) => {
-  const [activeId, setActiveId] = useState<string>('t1');
-  const [filterCategory, setFilterCategory] = useState<'all' | 'web' | 'ai' | 'edu'>('all');
-  const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number>(0);
 
-  const filteredItems = TIMELINE_DATA.filter((item) => {
-    if (filterCategory === 'all') return true;
-    return item.category === filterCategory;
-  });
+  // Height calculations for 4 perfectly spaced nodes
+  const nodeYPositions = [28, 108, 188, 268];
+  const activeY = nodeYPositions[hoveredIndex] || 28;
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="career-timeline-framer"
       style={{
         width: '100%',
         height: '100%',
         background: '#07090e',
         borderTop: `3px solid ${accentColor}`,
-        padding: '1.6rem 1.35rem',
+        padding: '2.2rem 1.8rem',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -85,202 +70,180 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
         position: 'relative'
       }}
     >
-      {/* Header Bar with Category Filter Tabs */}
-      <div style={{ borderBottom: '1px solid var(--border-hairline)', paddingBottom: '0.65rem', marginBottom: '0.85rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.55rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-            <Sparkles size={14} style={{ color: accentColor }} />
-            <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 700, letterSpacing: '0.03em' }}>
-              CAREER TIMELINE
-            </h2>
-          </div>
-          <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-            {filteredItems.length} MILESTONES
+      {/* Sleek Header */}
+      <motion.div
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.1, duration: 0.4 }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '1.2rem',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          paddingBottom: '0.75rem'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+          <span style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: accentColor, opacity: 0.85, fontWeight: 600, letterSpacing: '0.08em' }}>
+            02 //
           </span>
+          <h2 style={{ fontSize: '0.98rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+            CAREER TIMELINE
+          </h2>
         </div>
 
-        {/* Filter Bar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-          <Filter size={11} style={{ color: 'var(--text-muted)', marginRight: '2px' }} />
-          {[
-            { id: 'all', label: 'ALL' },
-            { id: 'ai', label: 'AI/ML' },
-            { id: 'web', label: 'WEB' },
-            { id: 'edu', label: 'EDU' }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setFilterCategory(tab.id as any)}
-              style={{
-                background: filterCategory === tab.id ? 'rgba(255, 107, 0, 0.2)' : 'rgba(255, 255, 255, 0.03)',
-                border: `1px solid ${filterCategory === tab.id ? accentColor : 'var(--border-hairline)'}`,
-                color: filterCategory === tab.id ? accentColor : 'var(--text-muted)',
-                padding: '0.15rem 0.5rem',
-                borderRadius: '4px',
-                fontSize: '0.65rem',
-                fontFamily: 'var(--font-mono)',
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
+        <motion.span
+          animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+          transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+          style={{ width: '6px', height: '6px', borderRadius: '50%', background: accentColor, boxShadow: `0 0 10px ${accentColor}` }}
+        />
+      </motion.div>
 
-      {/* Vertical Timeline Axis Container */}
-      <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingLeft: '1.25rem', margin: '0.4rem 0' }}>
-        {/* Illuminated 1px Vertical Axis */}
-        <div
+      {/* Main Timeline Container with Framer Motion SVG Vector Line & Nodes */}
+      <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingLeft: '2.2rem', margin: '0.4rem 0' }}>
+        {/* SVG Vector Line & Active Path Beam */}
+        <svg
           style={{
             position: 'absolute',
-            top: '8px',
-            bottom: '8px',
-            left: '4px',
-            width: '1px',
-            background: `linear-gradient(180deg, ${accentColor} 0%, rgba(255,107,0,0.4) 50%, rgba(255,255,255,0.12) 100%)`,
-            boxShadow: `0 0 8px ${accentColor}40`
+            top: 0,
+            left: '8px',
+            width: '24px',
+            height: '100%',
+            overflow: 'visible',
+            pointerEvents: 'none'
           }}
-        />
+        >
+          <defs>
+            <linearGradient id="line-glow-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#ff6b00" stopOpacity="1" />
+              <stop offset="50%" stopColor="#ff8533" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#ff6b00" stopOpacity="0.2" />
+            </linearGradient>
+            <filter id="glow-effect" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
 
-        {/* Milestone Nodes */}
-        {filteredItems.map((item, index) => {
-          const isActive = activeId === item.id;
-          const isPresentRole = index === 0 && item.id === 't1';
+          {/* Background Static Hairline Axis */}
+          <line x1="8" y1="28" x2="8" y2="268" stroke="rgba(255, 255, 255, 0.12)" strokeWidth="1.5" />
+
+          {/* Framer Motion Animated Beam Path */}
+          <motion.line
+            x1="8"
+            y1="28"
+            x2="8"
+            animate={{ y2: activeY }}
+            transition={{ type: 'spring', stiffness: 120, damping: 18 }}
+            stroke="url(#line-glow-grad)"
+            strokeWidth="2.5"
+            filter="url(#glow-effect)"
+            strokeLinecap="round"
+          />
+
+          {/* Node SVG Circles */}
+          {nodeYPositions.map((y, idx) => {
+            const isHovered = hoveredIndex === idx;
+            const isPresent = idx === 0;
+
+            return (
+              <g key={`svg-node-${idx}`}>
+                <line x1="4" y1={y} x2="12" y2={y} stroke={isHovered ? accentColor : 'transparent'} strokeWidth="1" />
+                <motion.circle
+                  cx="8"
+                  cy={y}
+                  animate={{
+                    r: isHovered ? 5.5 : isPresent ? 4.5 : 3.5,
+                    fill: isHovered ? accentColor : isPresent ? '#10b981' : 'rgba(255, 255, 255, 0.35)',
+                    stroke: isHovered ? '#ffffff' : 'none',
+                    strokeWidth: isHovered ? 1.5 : 0
+                  }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                  style={{
+                    filter: isHovered ? `drop-shadow(0px 0px 8px ${accentColor})` : 'none'
+                  }}
+                />
+              </g>
+            );
+          })}
+        </svg>
+
+        {/* Milestone Cards with Framer Motion Interactions */}
+        {TIMELINE_DATA.map((item, index) => {
+          const isHovered = hoveredIndex === index;
+          const isPresent = index === 0;
 
           return (
-            <div
+            <motion.div
               key={item.id}
-              onClick={() => setActiveId(item.id)}
-              onMouseEnter={() => setActiveId(item.id)}
+              onMouseEnter={() => setHoveredIndex(index)}
+              whileHover={{ x: 6 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               style={{
                 position: 'relative',
-                cursor: 'pointer',
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                padding: '0.45rem 0.65rem',
+                padding: '0.65rem 0.85rem',
                 borderRadius: '6px',
-                background: isActive ? 'rgba(8, 10, 15, 0.95)' : 'transparent',
-                border: `1px solid ${isActive ? 'rgba(255, 107, 0, 0.45)' : 'transparent'}`,
-                boxShadow: isActive ? '0 8px 25px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(255, 107, 0, 0.08)' : 'none',
-                transform: isActive ? 'translateY(-1px)' : 'none'
+                background: isHovered ? 'rgba(255, 107, 0, 0.08)' : 'transparent',
+                border: `1px solid ${isHovered ? 'rgba(255, 107, 0, 0.35)' : 'transparent'}`,
+                boxShadow: isHovered ? '0 8px 25px rgba(0, 0, 0, 0.5)' : 'none',
+                cursor: 'pointer'
               }}
             >
-              {/* Radar Pulsing Bullet Node */}
-              <div
-                style={{
-                  position: 'absolute',
-                  left: '-1.45rem',
-                  top: '0.75rem',
-                  width: isPresentRole ? '9px' : isActive ? '8px' : '6px',
-                  height: isPresentRole ? '9px' : isActive ? '8px' : '6px',
-                  borderRadius: '50%',
-                  background: isPresentRole ? '#10b981' : isActive ? accentColor : 'rgba(255,255,255,0.3)',
-                  boxShadow: isPresentRole ? '0 0 12px #10b981' : isActive ? `0 0 12px ${accentColor}` : 'none',
-                  transition: 'all 0.25s ease'
-                }}
-              />
-
-              {/* Date Pill & Type Icon */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+              {/* Date Pill */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
                 <span
                   style={{
-                    fontSize: '0.68rem',
+                    fontSize: '0.72rem',
                     fontFamily: 'var(--font-mono)',
-                    color: isPresentRole ? '#10b981' : isActive ? accentColor : 'var(--text-muted)',
+                    color: isPresent ? '#10b981' : isHovered ? accentColor : 'var(--text-muted)',
                     fontWeight: 600,
-                    letterSpacing: '0.05em',
-                    background: isPresentRole ? 'rgba(16, 185, 129, 0.12)' : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${isPresentRole ? 'rgba(16, 185, 129, 0.3)' : 'var(--border-hairline)'}`,
-                    padding: '0.12rem 0.5rem',
-                    borderRadius: '12px'
+                    letterSpacing: '0.05em'
                   }}
                 >
                   {item.year}
                 </span>
 
-                {item.type === 'work' ? (
-                  <Briefcase size={12} style={{ color: isActive ? accentColor : 'var(--text-muted)', opacity: 0.75 }} />
-                ) : (
-                  <GraduationCap size={12} style={{ color: isActive ? accentColor : 'var(--text-muted)', opacity: 0.75 }} />
+                {isPresent && (
+                  <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#10b981', padding: '0.08rem 0.45rem', borderRadius: '10px' }}>
+                    ACTIVE
+                  </span>
                 )}
               </div>
 
               {/* Role Title */}
-              <h3 style={{ fontSize: '0.94rem', fontFamily: 'var(--font-satoshi)', color: '#ffffff', fontWeight: 700, margin: '0.15rem 0' }}>
+              <h3 style={{ fontSize: '1.02rem', fontFamily: 'var(--font-satoshi)', color: '#ffffff', fontWeight: 700, margin: '0.1rem 0 0.25rem 0' }}>
                 {item.role}
               </h3>
 
               {/* Description */}
-              <p style={{ fontSize: '0.78rem', fontFamily: 'var(--font-satoshi)', color: isActive ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.65)', lineHeight: 1.45, margin: '0.25rem 0' }}>
+              <p style={{ fontSize: '0.84rem', fontFamily: 'var(--font-satoshi)', color: isHovered ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.68)', lineHeight: 1.5, margin: '0.2rem 0' }}>
                 {item.description}
               </p>
 
-              {/* Impact Metrics Badges (Revealed on active) */}
-              {isActive && item.impactMetrics && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', margin: '0.35rem 0 0.1rem 0' }}>
-                  {item.impactMetrics.map((metric) => (
-                    <span
-                      key={metric}
-                      style={{
-                        fontSize: '0.66rem',
-                        fontFamily: 'var(--font-mono)',
-                        color: '#10b981',
-                        background: 'rgba(16, 185, 129, 0.1)',
-                        border: '1px solid rgba(16, 185, 129, 0.3)',
-                        padding: '0.1rem 0.45rem',
-                        borderRadius: '4px'
-                      }}
+              {/* Tech Skill Badges with Framer Motion hover animation */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.5rem' }}>
+                <AnimatePresence>
+                  {item.skills.map((skill) => (
+                    <motion.span
+                      key={skill}
+                      whileHover={{ scale: 1.08, borderColor: accentColor }}
+                      transition={{ duration: 0.15 }}
+                      className="tech-badge"
+                      style={{ fontSize: '0.7rem', padding: '0.18rem 0.55rem', color: accentColor, borderColor: `${accentColor}35` }}
                     >
-                      ✓ {metric}
-                    </span>
+                      {skill}
+                    </motion.span>
                   ))}
-                </div>
-              )}
-
-              {/* Tech Skill Badges */}
-              {isActive && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem', marginTop: '0.45rem' }}>
-                  {item.skills.map((skill) => {
-                    const isSelected = selectedSkill === skill;
-                    return (
-                      <span
-                        key={skill}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedSkill(isSelected ? null : skill);
-                        }}
-                        className="tech-badge"
-                        style={{
-                          fontSize: '0.66rem',
-                          padding: '0.15rem 0.45rem',
-                          color: isSelected ? '#ffffff' : accentColor,
-                          background: isSelected ? accentColor : 'rgba(255,255,255,0.03)',
-                          borderColor: `${accentColor}45`,
-                          cursor: 'pointer'
-                        }}
-                      >
-                        {skill}
-                      </span>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                </AnimatePresence>
+              </div>
+            </motion.div>
           );
         })}
       </div>
-
-      {/* Footer Indicator */}
-      <div style={{ borderTop: '1px solid var(--border-hairline)', paddingTop: '0.6rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '0.66rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-          PAGE 01 | ADJACENT MATRIX
-        </span>
-        <span style={{ fontSize: '0.66rem', fontFamily: 'var(--font-mono)', color: accentColor }}>
-          ● INTERACTIVE NODES
-        </span>
-      </div>
-    </div>
+    </motion.div>
   );
 };
