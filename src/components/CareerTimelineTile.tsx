@@ -61,7 +61,7 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
         position: 'relative'
       }}
     >
-      {/* Clean Header (No 02// prefix) */}
+      {/* Clean Header */}
       <div
         style={{
           display: 'flex',
@@ -98,17 +98,15 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
           }}
         />
 
-        {/* Milestone Rows: Node Bullet Vertically Centered Relative to Item Content */}
+        {/* Milestone Rows: Node Bullet Locked on Vertical Axis */}
         {TIMELINE_DATA.map((item, index) => {
           const isHovered = hoveredIndex === index;
           const isPresent = index === 0;
 
           return (
-            <motion.div
+            <div
               key={item.id}
               onMouseEnter={() => setHoveredIndex(index)}
-              whileHover={{ x: 4 }}
-              transition={{ type: 'spring', stiffness: 350, damping: 22 }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -119,7 +117,7 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
                 cursor: 'pointer'
               }}
             >
-              {/* Bullet Node (Aligned to Vertical Center of Item) */}
+              {/* Bullet Node (LOCKED STRICTLY ON THE VERTICAL AXIS, NO X-TRANSLATION) */}
               <div style={{ width: '15px', display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
                 <motion.div
                   animate={{
@@ -136,8 +134,12 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
                 />
               </div>
 
-              {/* Text Element (No boxes, clean text) */}
-              <div style={{ flex: 1 }}>
+              {/* Text Element (SLIDES RIGHT ON HOVER FOR SMOOTH DEPTH) */}
+              <motion.div
+                animate={{ x: isHovered ? 5 : 0 }}
+                transition={{ type: 'spring', stiffness: 350, damping: 22 }}
+                style={{ flex: 1 }}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.15rem' }}>
                   <span
                     style={{
@@ -165,8 +167,8 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
                 <p style={{ fontSize: '0.84rem', fontFamily: 'var(--font-satoshi)', color: isHovered ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.65)', lineHeight: 1.45, margin: 0 }}>
                   {item.description}
                 </p>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           );
         })}
       </div>
