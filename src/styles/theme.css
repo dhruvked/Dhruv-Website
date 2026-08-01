@@ -42,6 +42,18 @@ html, body, #root, .app-root-wrapper {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Allow scrolling when Admin route is active */
+html.admin-mode-active,
+body.admin-mode-active,
+#root.admin-mode-active,
+.app-root-wrapper.admin-mode-active,
+.app-main-container.admin-mode-active {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  height: auto !important;
+  min-height: 100vh !important;
+}
+
 .app-root-wrapper {
   display: flex;
   flex-direction: column;
@@ -187,7 +199,7 @@ html, body, #root, .app-root-wrapper {
   background: var(--bg-tile);
   padding: 1rem 1.25rem;
   display: flex;
-  flex-direction: column;
+  flexDirection: column;
   justify-content: space-between;
   box-sizing: border-box;
   overflow: hidden;

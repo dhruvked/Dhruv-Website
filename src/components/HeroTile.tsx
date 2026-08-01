@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Download } from 'lucide-react';
+import { ContentStore, type HeroBioContent } from '../data/contentStore';
 
 interface HeroTileProps {
   accentColor: string;
 }
 
 export const HeroTile: React.FC<HeroTileProps> = ({ accentColor }) => {
+  const [heroBio, setHeroBio] = useState<HeroBioContent>(() => ContentStore.getContent().heroBio);
+
+  useEffect(() => {
+    setHeroBio(ContentStore.getContent().heroBio);
+  }, []);
+
   const handleDownloadResume = (e: React.MouseEvent) => {
     e.stopPropagation();
     const link = document.createElement('a');
-    link.href = '/Dhruv_Kedia_Resume.pdf';
+    link.href = heroBio.resumeUrl || '/Dhruv_Kedia_Resume.pdf';
     link.download = 'Dhruv_Kedia_Resume.pdf';
     link.target = '_blank';
     document.body.appendChild(link);
@@ -80,7 +87,7 @@ export const HeroTile: React.FC<HeroTileProps> = ({ accentColor }) => {
           lineHeight: 1.1
         }}
       >
-        Dhruv Kedia
+        {heroBio.name}
       </h1>
 
       {/* Description Paragraph */}
@@ -94,7 +101,7 @@ export const HeroTile: React.FC<HeroTileProps> = ({ accentColor }) => {
           fontWeight: 400
         }}
       >
-        Full-Stack & Distributed AI Systems Engineer. Architecting high-performance web platforms, scalable microservices, and autonomous AI architectures.
+        {heroBio.bioSummary}
       </p>
     </div>
   );

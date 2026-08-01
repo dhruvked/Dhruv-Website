@@ -1,39 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-
-interface TimelineItem {
-  id: string;
-  year: string;
-  role: string;
-  description: string;
-}
-
-const TIMELINE_DATA: TimelineItem[] = [
-  {
-    id: 't1',
-    year: '2024 – PRESENT',
-    role: 'Senior Full-Stack & AI Engineer',
-    description: 'Multi-agent AI workflows & distributed systems.'
-  },
-  {
-    id: 't2',
-    year: '2022 – 2024',
-    role: 'Full-Stack Systems Engineer',
-    description: 'High-throughput APIs & cloud microservices.'
-  },
-  {
-    id: 't3',
-    year: '2021 – 2022',
-    role: 'Software Engineering Intern',
-    description: 'Backend microservices & open-source tools.'
-  },
-  {
-    id: 't4',
-    year: '2021',
-    role: 'B.Tech Computer Science',
-    description: 'B.Tech CS degree; focused on algorithms.'
-  }
-];
+import { ContentStore, type TimelineItem } from '../data/contentStore';
 
 interface CareerTimelineTileProps {
   accentColor: string;
@@ -41,8 +8,12 @@ interface CareerTimelineTileProps {
 
 export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentColor }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [timelineData, setTimelineData] = useState<TimelineItem[]>(() => ContentStore.getContent().timeline);
 
-  // Active Job Accent Color: High-Tech Electric Cyan (#38bdf8)
+  useEffect(() => {
+    setTimelineData(ContentStore.getContent().timeline);
+  }, []);
+
   const activeJobColor = '#38bdf8';
 
   return (
@@ -65,12 +36,10 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
         position: 'relative'
       }}
     >
-      {/* Main Timeline List Container (Heading Removed per directive) */}
       <div
         onMouseLeave={() => setHoveredIndex(null)}
         style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', margin: '0.2rem 0' }}
       >
-        {/* Continuous Background Hairline Axis Line */}
         <div
           style={{
             position: 'absolute',
@@ -83,8 +52,7 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
           }}
         />
 
-        {/* Milestone Rows */}
-        {TIMELINE_DATA.map((item, index) => {
+        {timelineData.map((item, index) => {
           const isHovered = hoveredIndex === index;
           const isPresent = index === 0;
 
@@ -103,7 +71,6 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
                 cursor: 'pointer'
               }}
             >
-              {/* Bullet Node */}
               <div style={{ width: '15px', display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
                 <motion.div
                   animate={{
@@ -120,7 +87,6 @@ export const CareerTimelineTile: React.FC<CareerTimelineTileProps> = ({ accentCo
                 />
               </div>
 
-              {/* Text Element (TURNS ELECTRIC ORANGE ON HOVER) */}
               <motion.div
                 animate={{ x: isHovered ? 5 : 0 }}
                 transition={{ type: 'spring', stiffness: 350, damping: 22 }}

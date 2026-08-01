@@ -1,76 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, RotateCw, Layers } from 'lucide-react';
+import { ContentStore, type ProjectItem } from '../data/contentStore';
 
 interface ProjectsTileProps {
   accentColor?: string;
 }
 
-interface ProjectItem {
-  id: string;
-  num: string;
-  title: string;
-  category: string;
-  description: string;
-  metrics: string;
-  tech: string[];
-  details: string[];
-  link?: string;
-}
-
-const PROJECTS_DATA: ProjectItem[] = [
-  {
-    id: 'seam',
-    num: '01',
-    title: 'Seam',
-    category: 'AI HEALTHCARE PLATFORM',
-    description: "AI-powered healthcare platform leveraging India's ABDM ecosystem for medical record management & LLM clinical summarization.",
-    metrics: 'EMR / EHR Ingestion',
-    tech: ['Next.js', 'Python', 'LLM / RAG', 'PostgreSQL'],
-    details: [
-      'Built EMR/EHR data ingestion pipelines to parse complex medical records.',
-      'Integrated LLM-assisted clinical summarization for rapid doctor insights.',
-      'Designed ABDM ecosystem compliant security and data handling workflows.'
-    ],
-    link: 'https://github.com/dhruvked'
-  },
-  {
-    id: 'tryon',
-    num: '02',
-    title: 'Virtual Try-On',
-    category: 'REAL-TIME AI & WEBRTC',
-    description: 'Live video-to-video garment transformation platform powering real-time camera feed outfit swaps.',
-    metrics: 'Decart AI + WebRTC',
-    tech: ['Decart AI', 'WebRTC', 'Node.js', 'TypeScript'],
-    details: [
-      'Engineered live video-to-video garment transfer using Decart AI Realtime API (lucy_2_rt).',
-      'Optimized WebRTC streaming pipelines for ultra-low latency camera frames.',
-      'Integrated AI avatar memory retention boosting accuracy by 90%.'
-    ],
-    link: 'https://github.com/dhruvked'
-  },
-  {
-    id: 'blender-pipeline',
-    num: '03',
-    title: '3D Asset Pipeline',
-    category: 'HEADLESS BLENDER & CLOUD',
-    description: 'Automated 3D avatar clothing pipeline executing mesh transformations, normal recalculations, and GLB alignment.',
-    metrics: 'AWS EKS + Headless Blender',
-    tech: ['Python (bpy)', 'Node.js', 'AWS EKS', 'Docker'],
-    details: [
-      'Built headless Blender (bpy Python scripts) automation connected to Node.js microservices.',
-      'Automated normal recalculation and GLB asset alignment for 3D avatars.',
-      'Containerized cloud infrastructure on AWS (EKS/ECR) for high concurrency.'
-    ],
-    link: 'https://github.com/dhruvked'
-  }
-];
-
 export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b00' }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [projectsList, setProjectsList] = useState<ProjectItem[]>(() => ContentStore.getContent().projects);
 
-  const activeProject = PROJECTS_DATA[selectedIndex];
+  useEffect(() => {
+    setProjectsList(ContentStore.getContent().projects);
+  }, []);
+
+  const activeProject = projectsList[selectedIndex] || projectsList[0];
 
   const handleTabClick = (index: number, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -82,6 +28,8 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
     e.stopPropagation();
     setIsFlipped(!isFlipped);
   };
+
+  if (!activeProject) return null;
 
   return (
     <div
@@ -138,7 +86,7 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
 
             {/* Switcher Tabs */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              {PROJECTS_DATA.map((proj, idx) => {
+              {projectsList.map((proj, idx) => {
                 const isActive = idx === selectedIndex;
                 return (
                   <button
@@ -157,7 +105,7 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
                       transition: 'all 0.2s ease'
                     }}
                   >
-                    {proj.num} / {proj.title.split(' ')[0].toUpperCase()}
+                    {proj.tag}
                   </button>
                 );
               })}
@@ -168,7 +116,7 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.85rem', margin: '0.5rem 0' }}>
             <div>
               <div style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: accentColor, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '0.25rem' }}>
-                {activeProject.category}
+                {activeProject.tagline}
               </div>
               <h2 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 700, letterSpacing: '0.02em', marginBottom: '0.4rem' }}>
                 {activeProject.title}
@@ -180,7 +128,7 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
 
             {/* Tech Badges */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-              {activeProject.tech.map((t, idx) => (
+              {activeProject.techPills.map((t, idx) => (
                 <span
                   key={idx}
                   style={{
@@ -202,14 +150,14 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
           {/* Action Row */}
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.5)' }}>
-              ● {activeProject.metrics}
+              ● {activeProject.tagline}
             </span>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (activeProject.link) window.open(activeProject.link, '_blank');
+                  if (activeProject.codeUrl) window.open(activeProject.codeUrl, '_blank');
                 }}
                 className="btn"
                 style={{ fontSize: '0.65rem', padding: '0.25rem 0.65rem', gap: '0.3rem', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#ffffff' }}
@@ -271,13 +219,13 @@ export const ProjectsTile: React.FC<ProjectsTileProps> = ({ accentColor = '#ff6b
               </h3>
             </div>
             <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.5)' }}>
-              [{activeProject.num} / 03]
+              [{activeProject.tag}]
             </span>
           </div>
 
           {/* Highlights List */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.6rem', margin: '0.5rem 0' }}>
-            {activeProject.details.map((detail, idx) => (
+            {activeProject.specs.map((detail, idx) => (
               <div
                 key={idx}
                 style={{

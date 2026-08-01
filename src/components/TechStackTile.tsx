@@ -1,77 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { ContentStore, type TechStackDomain } from '../data/contentStore';
 
 interface TechStackTileProps {
   accentColor?: string;
 }
 
-interface DomainSpec {
-  id: string;
-  title: string;
-  score: number;
-  tools: string[];
-  accomplishment: string;
-  project: string;
-}
-
-const DOMAIN_SPECS: DomainSpec[] = [
-  {
-    id: 'ai-rag',
-    title: 'AI SYSTEMS & RAG',
-    score: 95,
-    tools: ['OpenAI API', 'Gemini API', 'Decart AI', 'Vector Search', 'HeyGen'],
-    accomplishment: 'Engineered real-time video garment transfer & RAG memory pipelines (+90% accuracy).',
-    project: 'Choreo AI / Virtual Try-On'
-  },
-  {
-    id: 'fullstack',
-    title: 'FULL-STACK CORE',
-    score: 90,
-    tools: ['TypeScript', 'JavaScript', 'React / Next.js', 'Node.js', 'Express', 'PostgreSQL'],
-    accomplishment: 'Architected high-concurrency web platforms, microservices & reactive matrix UIs.',
-    project: 'Seam / Dhruv-Website'
-  },
-  {
-    id: 'python-data',
-    title: 'PYTHON & DATA',
-    score: 85,
-    tools: ['Python', 'Pandas', 'NumPy', 'Data Ingestion', 'SQL', 'LLM Datasets'],
-    accomplishment: 'Built dataset evaluation platform handling 500+ user interactions for LLM fine-tuning.',
-    project: 'LLM Dataset Pipeline'
-  },
-  {
-    id: 'devops',
-    title: 'DEVOPS & CLOUD',
-    score: 74,
-    tools: ['AWS (EKS/ECR)', 'Docker', 'Kubernetes', 'CI/CD', 'Git'],
-    accomplishment: 'Containerized cloud infrastructure supporting high-concurrency real-time AI workloads.',
-    project: 'AWS Cloud Infra'
-  },
-  {
-    id: '3d-graphics',
-    title: '3D AUTOMATION',
-    score: 60,
-    tools: ['Blender (bpy)', 'GLB Assets', 'Mesh Transformations', 'Normal Recalculation'],
-    accomplishment: 'Automated 3D avatar clothing pipeline with headless Blender Python scripts.',
-    project: 'Avatar 3D Pipeline'
-  }
-];
-
-// All Axes Mapped to Domain Specs (Selection occurs on Front Page ONLY)
-const RADAR_AXES = [
-  { id: 'ai-rag', label: 'AI Systems & RAG', score: 95, color: '#ff6b00', angle: -90 },
-  { id: 'fullstack', label: 'Full-Stack (TS/React)', score: 90, color: '#ff6b00', angle: -18 },
-  { id: 'devops', label: 'DevOps & Cloud', score: 74, color: '#ff6b00', angle: 54 },
-  { id: '3d-graphics', label: '3D Automation', score: 60, color: '#ff6b00', angle: 126 },
-  { id: 'python-data', label: 'Python & Data Pipelines', score: 85, color: '#ff6b00', angle: 198 }
-];
-
 export const TechStackTile: React.FC<TechStackTileProps> = ({ accentColor = '#ff6b00' }) => {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [selectedDomainId, setSelectedDomainId] = useState<string>('ai-rag');
-  const [hoveredAxis, setHoveredAxis] = useState<{ id: string; label: string; score: number; color: string } | null>(null);
+  const [techStackDomains, setTechStackDomains] = useState<TechStackDomain[]>(() => ContentStore.getContent().techStack);
+  const [selectedDomainId, setSelectedDomainId] = useState<string>('s1');
+  const [hoveredAxis, setHoveredAxis] = useState<{ id: string; label: string; score: number } | null>(null);
 
-  const activeSpec = DOMAIN_SPECS.find((d) => d.id === selectedDomainId) || DOMAIN_SPECS[0];
+  useEffect(() => {
+    const latest = ContentStore.getContent().techStack;
+    setTechStackDomains(latest);
+    if (latest.length > 0 && !latest.some((d) => d.id === selectedDomainId)) {
+      setSelectedDomainId(latest[0].id);
+    }
+  }, []);
+
+  const activeSpec = techStackDomains.find((d) => d.id === selectedDomainId) || techStackDomains[0];
+
+  const angles = [-90, -18, 54, 126, 198];
+
+  const radarAxes = techStackDomains.map((domain, idx) => ({
+    id: domain.id,
+    label: domain.domain,
+    score: domain.percentage,
+    angle: angles[idx % angles.length]
+  }));
 
   const handleAxisClick = (domainId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -79,12 +37,11 @@ export const TechStackTile: React.FC<TechStackTileProps> = ({ accentColor = '#ff
     setIsFlipped(true);
   };
 
-  // Center & Radii optimized for 320x210 Canvas
   const cx = 160;
   const cy = 100;
   const maxR = 58;
 
-  const polygonPoints = RADAR_AXES.map((axis) => {
+  const polygonPoints = radarAxes.map((axis) => {
     const rad = (axis.angle * Math.PI) / 180;
     const r = (axis.score / 100) * maxR;
     const x = cx + r * Math.cos(rad);
@@ -92,13 +49,14 @@ export const TechStackTile: React.FC<TechStackTileProps> = ({ accentColor = '#ff
     return `${x},${y}`;
   }).join(' ');
 
+  if (!activeSpec) return null;
+
   return (
     <div
       className="tech-stack-tile-container"
       onClick={() => setIsFlipped(!isFlipped)}
       style={{ width: '100%', height: '100%', position: 'relative', perspective: '1200px', cursor: 'pointer' }}
     >
-      {/* Framer Motion 3D Rotatable Inner Container */}
       <motion.div
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{
@@ -114,7 +72,7 @@ export const TechStackTile: React.FC<TechStackTileProps> = ({ accentColor = '#ff
           transformStyle: 'preserve-3d'
         }}
       >
-        {/* FRONT FACE: SELECT DOMAIN FROM RADAR GRAPH ONLY */}
+        {/* FRONT FACE: RADAR GRAPH WITH DYNAMIC PERCENTAGES */}
         <div
           className="cube-face cube-face-front"
           style={{
@@ -134,7 +92,6 @@ export const TechStackTile: React.FC<TechStackTileProps> = ({ accentColor = '#ff
             overflow: 'hidden'
           }}
         >
-          {/* Radar Canvas */}
           <div
             style={{
               flex: 1,
@@ -147,7 +104,6 @@ export const TechStackTile: React.FC<TechStackTileProps> = ({ accentColor = '#ff
             }}
           >
             <svg width="320" height="210" viewBox="0 0 320 210" style={{ overflow: 'visible', maxWidth: '100%', maxHeight: '100%' }}>
-              {/* Concentric Background Grid Rings */}
               {[0.33, 0.66, 1.0].map((level, idx) => (
                 <circle
                   key={idx}
@@ -160,8 +116,7 @@ export const TechStackTile: React.FC<TechStackTileProps> = ({ accentColor = '#ff
                 />
               ))}
 
-              {/* Axis Spoke Lines */}
-              {RADAR_AXES.map((axis, idx) => {
+              {radarAxes.map((axis, idx) => {
                 const rad = (axis.angle * Math.PI) / 180;
                 const x2 = cx + maxR * Math.cos(rad);
                 const y2 = cy + maxR * Math.sin(rad);
@@ -178,7 +133,6 @@ export const TechStackTile: React.FC<TechStackTileProps> = ({ accentColor = '#ff
                 );
               })}
 
-              {/* Filled Polygon Mesh */}
               <polygon
                 points={polygonPoints}
                 fill="rgba(255, 107, 0, 0.14)"
@@ -186,8 +140,7 @@ export const TechStackTile: React.FC<TechStackTileProps> = ({ accentColor = '#ff
                 strokeWidth="1.5"
               />
 
-              {/* Axis Points and Clickable Labels (Selection occurs HERE on front page) */}
-              {RADAR_AXES.map((axis, idx) => {
+              {radarAxes.map((axis, idx) => {
                 const rad = (axis.angle * Math.PI) / 180;
                 const pointR = (axis.score / 100) * maxR;
                 const px = cx + pointR * Math.cos(rad);
@@ -228,7 +181,7 @@ export const TechStackTile: React.FC<TechStackTileProps> = ({ accentColor = '#ff
                       alignmentBaseline="middle"
                       style={{ transition: 'fill 0.2s ease' }}
                     >
-                      {axis.label}
+                      {axis.label} ({axis.score}%)
                     </text>
                   </g>
                 );
@@ -236,7 +189,6 @@ export const TechStackTile: React.FC<TechStackTileProps> = ({ accentColor = '#ff
             </svg>
           </div>
 
-          {/* Footer Tooltip Bar */}
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.35rem', textAlign: 'center' }}>
             <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: hoveredAxis ? accentColor : 'rgba(255,255,255,0.6)', fontWeight: 600, transition: 'color 0.2s ease' }}>
               {hoveredAxis ? `${hoveredAxis.label.toUpperCase()} — ${hoveredAxis.score}% (TAP TO INSPECT)` : 'TAP ANY DOMAIN TO INSPECT SPECS ↗'}
@@ -244,7 +196,7 @@ export const TechStackTile: React.FC<TechStackTileProps> = ({ accentColor = '#ff
           </div>
         </div>
 
-        {/* BACK FACE: CLEAN DISPLAY ONLY (NO TAB SELECTION HERE) */}
+        {/* BACK FACE: SPEC DETAILS */}
         <div
           className="cube-face cube-face-side"
           style={{
@@ -265,54 +217,37 @@ export const TechStackTile: React.FC<TechStackTileProps> = ({ accentColor = '#ff
             overflow: 'hidden'
           }}
         >
-          {/* Header Bar showing Selected Domain */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', paddingBottom: '0.6rem' }}>
             <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-clash)', color: '#ffffff', fontWeight: 700, letterSpacing: '0.02em' }}>
-              {activeSpec.title}
+              {activeSpec.domain}
             </h3>
             <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: accentColor, fontWeight: 700 }}>
-              {activeSpec.score}% PROFICIENCY
+              {activeSpec.percentage}% PROFICIENCY
             </span>
           </div>
 
-          {/* SPEC SHEET CONTENT */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.9rem', margin: '0.6rem 0' }}>
-            <div>
-              <div style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.45)', marginBottom: '0.35rem' }}>
-                PRODUCTION TOOLS & FRAMEWORKS:
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.6rem', margin: '0.6rem 0' }}>
+            {activeSpec.specDetails.map((detail, idx) => (
+              <div
+                key={idx}
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.5rem',
+                  fontSize: '0.78rem',
+                  fontFamily: 'var(--font-satoshi)',
+                  color: 'rgba(255, 255, 255, 0.85)',
+                  lineHeight: 1.45
+                }}
+              >
+                <span style={{ color: accentColor, fontFamily: 'var(--font-mono)', fontSize: '0.7rem', marginTop: '0.1rem' }}>
+                  0{idx + 1}.
+                </span>
+                <span>{detail}</span>
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-                {activeSpec.tools.map((tool, idx) => (
-                  <span
-                    key={idx}
-                    style={{
-                      fontSize: '0.72rem',
-                      fontFamily: 'var(--font-mono)',
-                      background: 'rgba(255, 255, 255, 0.03)',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
-                      color: 'rgba(255, 255, 255, 0.85)',
-                      padding: '0.25rem 0.65rem',
-                      borderRadius: '3px'
-                    }}
-                  >
-                    {tool}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Minimal 1-Line Real-World Impact Statement */}
-            <div style={{ borderLeft: `2px solid ${accentColor}`, paddingLeft: '0.75rem' }}>
-              <div style={{ fontSize: '0.6rem', fontFamily: 'var(--font-mono)', color: accentColor, fontWeight: 700, marginBottom: '0.2rem' }}>
-                REAL-WORLD IMPACT ({activeSpec.project}):
-              </div>
-              <p style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.85)', fontFamily: 'var(--font-satoshi)', lineHeight: 1.45 }}>
-                {activeSpec.accomplishment}
-              </p>
-            </div>
+            ))}
           </div>
 
-          {/* Footer Back Instruction Bar */}
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.4rem', textAlign: 'center' }}>
             <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: accentColor }}>
               CLICK ANYWHERE TO RETURN TO RADAR MATRIX ↺

@@ -1,14 +1,104 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { GitCommit, GitBranch, ExternalLink, Loader2 } from 'lucide-react';
 
 interface DeveloperDeskTileProps {
   accentColor?: string;
+}
+
+interface CommitData {
+  hash: string;
+  message: string;
+  repo: string;
+  time: string;
+  url: string;
+  description: string | null;
+  isLoading: boolean;
 }
 
 export const DeveloperDeskTile: React.FC<DeveloperDeskTileProps> = ({ accentColor = '#ff6b00' }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [frame, setFrame] = useState(0);
   const [time, setTime] = useState<Date>(new Date());
+  
+  const [latestCommit, setLatestCommit] = useState<CommitData>({
+    hash: '',
+    message: '',
+    repo: 'dhruvked/Dhruv-Website',
+    time: '',
+    url: 'https://github.com/dhruvked/Dhruv-Website',
+    description: null,
+    isLoading: true
+  });
+
+  // Fetch live GitHub repository description and latest commit info directly from GitHub API
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchGitHubData = async () => {
+      try {
+        const [commitRes, repoRes] = await Promise.all([
+          fetch('https://api.github.com/repos/dhruvked/Dhruv-Website/commits?per_page=1', {
+            headers: { Accept: 'application/vnd.github.v3+json' }
+          }),
+          fetch('https://api.github.com/repos/dhruvked/Dhruv-Website', {
+            headers: { Accept: 'application/vnd.github.v3+json' }
+          })
+        ]);
+
+        let commitMsg = '';
+        let commitHash = '';
+        let commitTime = '';
+        let commitUrl = 'https://github.com/dhruvked/Dhruv-Website';
+        let repoDesc: string | null = null;
+
+        if (commitRes.ok) {
+          const commitData = await commitRes.json();
+          if (Array.isArray(commitData) && commitData[0]) {
+            const commit = commitData[0];
+            commitHash = commit.sha.substring(0, 7);
+            commitMsg = commit.commit.message.split('\n')[0];
+            commitTime = new Date(commit.commit.author.date).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric'
+            });
+            commitUrl = commit.html_url || 'https://github.com/dhruvked/Dhruv-Website';
+          }
+        }
+
+        if (repoRes.ok) {
+          const repoData = await repoRes.json();
+          if (repoData && typeof repoData.description === 'string' && repoData.description.trim() !== '') {
+            repoDesc = repoData.description.trim();
+          }
+        }
+
+        if (isMounted) {
+          setLatestCommit({
+            hash: commitHash,
+            message: commitMsg,
+            repo: 'dhruvked/Dhruv-Website',
+            time: commitTime,
+            url: commitUrl,
+            description: repoDesc,
+            isLoading: false
+          });
+        }
+      } catch (e) {
+        console.warn('Failed to fetch live GitHub commit data:', e);
+        if (isMounted) {
+          setLatestCommit((prev) => ({ ...prev, isLoading: false }));
+        }
+      }
+    };
+
+    fetchGitHubData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -50,7 +140,7 @@ export const DeveloperDeskTile: React.FC<DeveloperDeskTileProps> = ({ accentColo
           transformStyle: 'preserve-3d'
         }}
       >
-        {/* FRONT FACE: ENHANCED 8-BIT SCENE (HEADPHONES, PLANT, RGB STRIP, SHOOTING STAR, SERVER TOWER) */}
+        {/* FRONT FACE: ENHANCED 8-BIT SCENE */}
         <div
           className="cube-face cube-face-front"
           style={{
@@ -137,7 +227,7 @@ export const DeveloperDeskTile: React.FC<DeveloperDeskTileProps> = ({ accentColo
                 <polygon points="68,17 90,44 48,44" fill="rgba(254, 240, 138, 0.14)" />
               )}
 
-              {/* 5. PIXEL SERVER TOWER WITH BLINKING LED LIGHTS */}
+              {/* PIXEL SERVER TOWER WITH BLINKING LED LIGHTS */}
               <rect x="84" y="24" width="12" height="18" fill="#1e293b" rx="1" />
               <rect x="86" y="27" width="2" height="2" fill={frame % 2 === 0 ? '#10b981' : '#334155'} />
               <rect x="90" y="27" width="2" height="2" fill={frame % 3 === 0 ? '#ff6b00' : '#334155'} />
@@ -161,7 +251,7 @@ export const DeveloperDeskTile: React.FC<DeveloperDeskTileProps> = ({ accentColo
               <rect x="8" y="45" width="4" height="20" fill="#1e293b" />
               <rect x="94" y="45" width="4" height="20" fill="#1e293b" />
 
-              {/* 2. POTTED PIXEL BONSAI / CACTUS PLANT */}
+              {/* POTTED PIXEL BONSAI / CACTUS PLANT */}
               <rect x="14" y="36" width="6" height="6" fill="#b45309" rx="1" />
               <rect x="16" y="30" width="2" height="6" fill="#10b981" />
               <rect x="14" y="32" width="2" height="2" fill="#10b981" />
@@ -200,7 +290,7 @@ export const DeveloperDeskTile: React.FC<DeveloperDeskTileProps> = ({ accentColo
                 </>
               )}
 
-              {/* 1. DEVELOPER CHARACTER WITH RETRO OVER-EAR HEADPHONES & MUSIC NOTES */}
+              {/* DEVELOPER CHARACTER WITH RETRO HEADPHONES & MUSIC NOTES */}
               <rect
                 x="64"
                 y={isLateNight ? 26 : 24}
@@ -209,12 +299,10 @@ export const DeveloperDeskTile: React.FC<DeveloperDeskTileProps> = ({ accentColo
                 fill="#f87171"
                 rx="2"
               />
-              {/* Headphones Band & Earpads */}
               <rect x="63" y={isLateNight ? 24 : 22} width="12" height="3" fill="#ff6b00" />
               <rect x="62" y={isLateNight ? 26 : 24} width="2" height="5" fill="#38bdf8" />
               <rect x="74" y={isLateNight ? 26 : 24} width="2" height="5" fill="#38bdf8" />
 
-              {/* Animated Music Note Floating */}
               {!isLateNight && (
                 <text
                   x={76 + (frame % 2)}
@@ -228,7 +316,6 @@ export const DeveloperDeskTile: React.FC<DeveloperDeskTileProps> = ({ accentColo
                 </text>
               )}
 
-              {/* Body Hoodie */}
               <rect x="62" y="34" width="14" height="10" fill={isLateNight ? '#475569' : '#3b82f6'} />
 
               {!isLateNight ? (
@@ -247,7 +334,6 @@ export const DeveloperDeskTile: React.FC<DeveloperDeskTileProps> = ({ accentColo
                 <rect x="54" y="38" width="12" height="3" fill="#f87171" />
               )}
 
-              {/* Keyboard */}
               <rect x="44" y="40" width="14" height="2" fill="#94a3b8" />
             </svg>
           </div>
@@ -255,12 +341,12 @@ export const DeveloperDeskTile: React.FC<DeveloperDeskTileProps> = ({ accentColo
           {/* INCONSPICUOUS SUBTLE BOTTOM MESSAGE */}
           <div style={{ paddingTop: '0.35rem', textAlign: 'center' }}>
             <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.45)', letterSpacing: '0.02em' }}>
-              flip to see what Dhruv's working on right now ↗
+              flip to view latest commit ↗
             </span>
           </div>
         </div>
 
-        {/* BACK FACE: EMPTY CANVAS FOR USER DESIGN */}
+        {/* BACK FACE: SLEEK HEADER (TOP) -> SINGLE COMBINED REPO & COMMIT CARD (MIDDLE) -> ARTISTIC QUOTE (BOTTOM) */}
         <div
           className="cube-face cube-face-side"
           style={{
@@ -277,20 +363,126 @@ export const DeveloperDeskTile: React.FC<DeveloperDeskTileProps> = ({ accentColo
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            alignItems: 'center',
             background: '#07090e',
             overflow: 'hidden'
           }}
         >
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255, 255, 255, 0.3)', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>
-            [ BACK FACE CANVAS - READY FOR DESIGN ]
-          </div>
+          {/* 1. SLEEK SMART HEADER OUTSIDE THE CARD (AT THE VERY TOP) */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: accentColor }} />
+              <span style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: '#ffffff', fontWeight: 700, letterSpacing: '0.08em' }}>
+                LATEST COMMIT & REPOSITORY
+              </span>
+            </div>
 
-          <div style={{ paddingTop: '0.4rem', textAlign: 'center' }}>
-            <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.45)' }}>
-              flip to return to developer desk ↺
+            <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: accentColor, fontWeight: 700 }}>
+              GITHUB STREAM
             </span>
           </div>
+
+          {/* 2. SINGLE COMBINED REPO + COMMIT CARD (MIDDLE) */}
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.025)',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              borderLeft: `3px solid ${accentColor}`,
+              borderRadius: '6px',
+              padding: '0.75rem 0.9rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.45rem',
+              margin: '0.3rem 0'
+            }}
+          >
+            {/* Repo Link + Hash Row */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <a
+                href={latestCommit.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  fontSize: '0.76rem',
+                  fontFamily: 'var(--font-mono)',
+                  color: accentColor,
+                  fontWeight: 700,
+                  textDecoration: 'none'
+                }}
+              >
+                <GitBranch size={12} />
+                <span>{latestCommit.repo}</span>
+                <ExternalLink size={10} />
+              </a>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.6)' }}>
+                {latestCommit.isLoading ? (
+                  <Loader2 size={11} className="animate-spin" style={{ color: accentColor }} />
+                ) : (
+                  <GitCommit size={11} style={{ color: accentColor }} />
+                )}
+                <span>{latestCommit.hash || 'e136b76'}</span>
+              </div>
+            </div>
+
+            {/* Commit Message */}
+            {latestCommit.message && (
+              <p style={{ fontSize: '0.78rem', fontFamily: 'var(--font-satoshi)', color: '#ffffff', margin: 0, fontWeight: 500, lineHeight: 1.4 }}>
+                "{latestCommit.message}"
+              </p>
+            )}
+
+            {/* Commit Time */}
+            {latestCommit.time && (
+              <span style={{ fontSize: '0.58rem', fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.35)' }}>
+                Pushed {latestCommit.time}
+              </span>
+            )}
+          </div>
+
+          {/* 3. ARTISTIC EDITORIAL CYBER-JOURNAL QUOTE (BELOW THE CARD) */}
+          {latestCommit.description ? (
+            <div
+              style={{
+                position: 'relative',
+                paddingLeft: '1.2rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.15rem'
+              }}
+            >
+              <span
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: '-0.4rem',
+                  fontSize: '2.2rem',
+                  lineHeight: 1,
+                  fontFamily: 'serif',
+                  color: accentColor,
+                  opacity: 0.85
+                }}
+              >
+                “
+              </span>
+              <p
+                style={{
+                  fontSize: '0.76rem',
+                  fontFamily: 'var(--font-clash)',
+                  color: 'rgba(255, 255, 255, 0.85)',
+                  fontWeight: 600,
+                  margin: 0,
+                  lineHeight: 1.45,
+                  fontStyle: 'italic'
+                }}
+              >
+                {latestCommit.description}
+              </p>
+            </div>
+          ) : null}
         </div>
       </motion.div>
     </div>
