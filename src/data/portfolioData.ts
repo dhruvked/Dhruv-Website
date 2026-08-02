@@ -35,7 +35,7 @@ export interface TileData {
 export const ASYMMETRICAL_GRID_TILES: TileData[] = [
   {
     id: 'hero-split-bio',
-    gridSpan: { colStart: 1, rowStart: 1, colSpan: 7, rowSpan: 12 },
+    gridSpan: { colStart: 1, rowStart: 1, colSpan: 7, rowSpan: 3 },
     isRotating: true,
     type: 'hero',
     front: {
@@ -53,7 +53,7 @@ export const ASYMMETRICAL_GRID_TILES: TileData[] = [
   },
   {
     id: 'social-connect',
-    gridSpan: { colStart: 8, rowStart: 1, colSpan: 5, rowSpan: 2 },
+    gridSpan: { colStart: 10, rowStart: 1, colSpan: 3, rowSpan: 1 },
     isRotating: false,
     type: 'social',
     front: {
@@ -64,7 +64,7 @@ export const ASYMMETRICAL_GRID_TILES: TileData[] = [
   },
   {
     id: 'career-timeline',
-    gridSpan: { colStart: 8, rowStart: 3, colSpan: 5, rowSpan: 10 },
+    gridSpan: { colStart: 10, rowStart: 2, colSpan: 3, rowSpan: 11 },
     isRotating: false,
     type: 'timeline',
     front: {
@@ -75,7 +75,7 @@ export const ASYMMETRICAL_GRID_TILES: TileData[] = [
   },
   {
     id: 'clock-tile',
-    gridSpan: { colStart: 1, rowStart: 1, colSpan: 4, rowSpan: 4 },
+    gridSpan: { colStart: 8, rowStart: 1, colSpan: 2, rowSpan: 3 },
     isRotating: true,
     type: 'clock',
     front: {
@@ -86,7 +86,7 @@ export const ASYMMETRICAL_GRID_TILES: TileData[] = [
   },
   {
     id: 'developer-desk',
-    gridSpan: { colStart: 5, rowStart: 1, colSpan: 7, rowSpan: 4 },
+    gridSpan: { colStart: 1, rowStart: 10, colSpan: 4, rowSpan: 3 },
     isRotating: true,
     type: 'desk',
     front: {
@@ -97,7 +97,7 @@ export const ASYMMETRICAL_GRID_TILES: TileData[] = [
   },
   {
     id: 'terminal-sandbox',
-    gridSpan: { colStart: 5, rowStart: 5, colSpan: 7, rowSpan: 8 },
+    gridSpan: { colStart: 1, rowStart: 4, colSpan: 4, rowSpan: 6 },
     isRotating: false,
     type: 'terminal',
     front: {
@@ -108,7 +108,7 @@ export const ASYMMETRICAL_GRID_TILES: TileData[] = [
   },
   {
     id: 'featured-projects',
-    gridSpan: { colStart: 1, rowStart: 5, colSpan: 4, rowSpan: 8 },
+    gridSpan: { colStart: 5, rowStart: 8, colSpan: 5, rowSpan: 5 },
     isRotating: false,
     type: 'projects',
     front: {
@@ -119,7 +119,7 @@ export const ASYMMETRICAL_GRID_TILES: TileData[] = [
   },
   {
     id: 'tech-stack-matrix',
-    gridSpan: { colStart: 1, rowStart: 1, colSpan: 12, rowSpan: 6 },
+    gridSpan: { colStart: 5, rowStart: 4, colSpan: 5, rowSpan: 4 },
     isRotating: false,
     type: 'techstack',
     front: {
