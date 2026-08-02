@@ -1,18 +1,50 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Monitor, X } from 'lucide-react';
 import { type TileData } from '../data/portfolioData';
 import { LayoutStore } from '../data/layoutStore';
 import { TileCube } from './TileCube';
 import { GridBuilderStudio } from './GridBuilderStudio';
 
-export const MonolithicGrid: React.FC = () => {
+interface MonolithicGridProps {
+  isEditMode?: boolean;
+}
+
+export const MonolithicGrid: React.FC<MonolithicGridProps> = ({ isEditMode = false }) => {
   const [tiles, setTiles] = useState<TileData[]>(() => LayoutStore.getLayout());
   const [selectedTileId, setSelectedTileId] = useState<string | null>('hero-split-bio');
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Automatically persist layout to localStorage and LayoutStore on every tile drag/resize change
   useEffect(() => {
     LayoutStore.updateLayout(tiles);
   }, [tiles]);
+
+  // Track scroll position and calculate progress percentage on mobile page container
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      if (container.scrollTop > 30) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+
+      const totalScroll = container.scrollHeight - container.clientHeight;
+      if (totalScroll > 0) {
+        const progress = (container.scrollTop / totalScroll) * 100;
+        setScrollProgress(Math.min(100, Math.max(0, progress)));
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleSaveLayout = () => {
     LayoutStore.updateLayout(tiles);
@@ -144,17 +176,46 @@ export const MonolithicGrid: React.FC = () => {
 
   return (
     <main style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
-      {/* Floating Drag & Resize Builder Studio Tool */}
-      <GridBuilderStudio
-        tiles={tiles}
-        selectedTileId={selectedTileId}
-        onSelectTile={setSelectedTileId}
-        onAddTile={handleAddTile}
-        onUpdateTile={handleUpdateTile}
-        onDeleteTile={handleDeleteTile}
-        onResetLayout={handleResetLayout}
-        onSaveLayout={handleSaveLayout}
-      />
+      {/* Top Floating Ambient Toast (Auto-Fades on Scroll, Mobile Only) */}
+      <AnimatePresence>
+        {!isScrolled && !isDismissed && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: -15, x: '-50%' }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+            className="mobile-desktop-toast"
+            onClick={() => setIsDismissed(true)}
+            title="Click to dismiss"
+          >
+            <Monitor size={12} style={{ color: 'var(--accent-orange)' }} />
+            <span>BEST VIEWED ON DESKTOP FOR 3D MATRIX MODE</span>
+            <X size={11} style={{ opacity: 0.6, marginLeft: '0.2rem' }} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Right-Edge Hairline Progress Rail (Micro-Indicator, Mobile Only) */}
+      <div className="mobile-progress-rail">
+        <div
+          className="mobile-progress-fill"
+          style={{ height: `${Math.max(12, scrollProgress)}%` }}
+        />
+      </div>
+
+      {/* Floating Drag & Resize Builder Studio Tool (Rendered ONLY in /layout Edit Mode) */}
+      {isEditMode && (
+        <GridBuilderStudio
+          tiles={tiles}
+          selectedTileId={selectedTileId}
+          onSelectTile={setSelectedTileId}
+          onAddTile={handleAddTile}
+          onUpdateTile={handleUpdateTile}
+          onDeleteTile={handleDeleteTile}
+          onResetLayout={handleResetLayout}
+          onSaveLayout={handleSaveLayout}
+        />
+      )}
 
       {/* 12-Row Page Snap Container */}
       <div ref={containerRef} className="page-snap-container">
@@ -165,9 +226,10 @@ export const MonolithicGrid: React.FC = () => {
                 <TileCube
                   key={tile.id}
                   tile={tile}
-                  isSelected={selectedTileId === tile.id}
-                  onSelect={setSelectedTileId}
-                  onUpdateGridSpan={handleUpdateGridSpan}
+                  isSelected={isEditMode && selectedTileId === tile.id}
+                  isEditMode={isEditMode}
+                  onSelect={isEditMode ? setSelectedTileId : undefined}
+                  onUpdateGridSpan={isEditMode ? handleUpdateGridSpan : undefined}
                 />
               ))}
             </div>

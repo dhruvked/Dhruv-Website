@@ -73,8 +73,22 @@ body.admin-mode-active,
   height: 100vh;
 }
 
-/* Embedded Mobile Social Dock (Hidden on Desktop >= 1024px and height >= 800px) */
-.hero-mobile-socials {
+/* Hide drag handles, resize handles, and selected tile outlines unless /layout mode is active */
+.app-root-wrapper:not(.layout-mode-active) .tile-drag-handle,
+.app-root-wrapper:not(.layout-mode-active) .tile-resize-handle {
+  display: none !important;
+}
+
+.app-root-wrapper:not(.layout-mode-active) .selected-tile-active {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
+
+/* Embedded Mobile Social Dock, Scroll Hint, Mobile Toast, & Progress Rail (Hidden on Desktop >= 1024px and height >= 800px) */
+.hero-mobile-socials,
+.hero-mobile-scroll-hint,
+.mobile-desktop-toast,
+.mobile-progress-rail {
   display: none;
 }
 
@@ -150,12 +164,63 @@ body.admin-mode-active,
     scroll-behavior: smooth !important;
   }
 
+  .mobile-desktop-toast {
+    position: fixed !important;
+    top: 0.8rem !important;
+    left: 50% !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.45rem !important;
+    background: rgba(7, 9, 14, 0.88) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-left: 2px solid var(--accent-orange) !important;
+    padding: 0.4rem 0.85rem !important;
+    border-radius: 20px !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.62rem !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    letter-spacing: 0.04em !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+  }
+
+  /* Ultra-subtle Right-Edge Hairline Progress Rail */
+  .mobile-progress-rail {
+    position: fixed !important;
+    right: 4px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 9990 !important;
+    display: block !important;
+    width: 2px !important;
+    height: 110px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 2px !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+  }
+
+  .mobile-progress-fill {
+    width: 100% !important;
+    background: var(--accent-orange) !important;
+    box-shadow: 0 0 8px var(--accent-orange) !important;
+    border-radius: 2px !important;
+    transition: height 0.15s ease-out !important;
+  }
+
   .hero-mobile-socials {
     display: flex !important;
-    gap: 1.6rem !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
     justify-content: center !important;
     align-items: center !important;
-    margin-top: 1.5rem !important;
+    margin-top: 1.2rem !important;
   }
 
   /* Electric Orange Accent Glow is the DEFAULT STATE on Mobile/Tablet */
@@ -164,15 +229,33 @@ body.admin-mode-active,
     filter: drop-shadow(0 0 8px var(--accent-orange)) drop-shadow(0 0 16px var(--accent-orange)) !important;
   }
 
-  /* Reposition Hero Resume Button to Bottom of Screen on Mobile/Tablet */
-  .hero-resume-btn {
-    top: auto !important;
-    bottom: 2rem !important;
-    right: 50% !important;
-    transform: translateX(50%) !important;
+  .hero-mobile-socials .resume-text-btn-glow {
+    color: var(--accent-orange) !important;
+    text-shadow: 0 0 8px var(--accent-orange), 0 0 16px var(--accent-orange) !important;
   }
 
-  .cube-wrapper-social-connect {
+  /* Animated Scroll Hint at the very bottom on Mobile */
+  .hero-mobile-scroll-hint {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.3rem !important;
+    position: absolute !important;
+    bottom: 0.6rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.6rem !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    letter-spacing: 0.08em !important;
+    pointer-events: none !important;
+    z-index: 10 !important;
+  }
+
+  /* Hide Standalone Social Connect, Terminal CLI, Clock, and Developer Desk Tiles on Mobile */
+  .cube-wrapper-social-connect,
+  .cube-wrapper-terminal,
+  .cube-wrapper-clock,
+  .cube-wrapper-developer-desk {
     display: none !important;
   }
 
@@ -227,6 +310,11 @@ body.admin-mode-active,
   .social-logo-glow-item:hover {
     color: var(--accent-orange) !important;
     filter: drop-shadow(0 0 10px var(--accent-orange)) drop-shadow(0 0 20px var(--accent-orange)) !important;
+  }
+
+  .resume-text-btn-glow:hover {
+    color: var(--accent-orange) !important;
+    text-shadow: 0 0 10px var(--accent-orange), 0 0 20px var(--accent-orange) !important;
   }
 }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, Check, Phone } from 'lucide-react';
+import { Check, Phone, ChevronDown } from 'lucide-react';
 import { ContentStore, type HeroBioContent, type SocialLinks } from '../data/contentStore';
 
 interface HeroTileProps {
@@ -26,6 +26,11 @@ export const HeroTile: React.FC<HeroTileProps> = ({ accentColor }) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    setCopiedId('resume');
+    setTimeout(() => {
+      setCopiedId(null);
+    }, 2000);
   };
 
   const socialLinks = [
@@ -61,7 +66,7 @@ export const HeroTile: React.FC<HeroTileProps> = ({ accentColor }) => {
     {
       id: 'email',
       name: 'Email',
-      url: `mailto:${socials.email}`,
+      url: socials.email,
       svgPath: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect width="20" height="16" x="2" y="4" rx="2" />
@@ -74,19 +79,19 @@ export const HeroTile: React.FC<HeroTileProps> = ({ accentColor }) => {
   const handleSocialClick = (e: React.MouseEvent, item: typeof socialLinks[0]) => {
     e.stopPropagation();
 
-    // Copy to clipboard (phone number or link)
-    const copyValue = item.id === 'phone' ? item.url : item.id === 'email' ? socials.email : item.url;
-    navigator.clipboard.writeText(copyValue);
+    if (item.id === 'phone' || item.id === 'email') {
+      // Copy to clipboard for Phone & Email with tick animation
+      const copyValue = item.id === 'phone' ? item.url : socials.email;
+      navigator.clipboard.writeText(copyValue);
+      setCopiedId(item.id);
 
-    setCopiedId(item.id);
-
-    if (item.id !== 'phone') {
+      setTimeout(() => {
+        setCopiedId(null);
+      }, 2000);
+    } else {
+      // Direct external navigation for GitHub & LinkedIn (No tick animation)
       window.open(item.url, '_blank');
     }
-
-    setTimeout(() => {
-      setCopiedId(null);
-    }, 2000);
   };
 
   return (
@@ -109,37 +114,6 @@ export const HeroTile: React.FC<HeroTileProps> = ({ accentColor }) => {
         overflow: 'hidden'
       }}
     >
-      {/* Download Resume Button (Top-Right on Desktop, Centered Bottom on Mobile < 1024px) */}
-      <motion.button
-        className="hero-resume-btn"
-        whileHover={{ scale: 1.06, borderColor: accentColor }}
-        whileTap={{ scale: 0.95 }}
-        onClick={handleDownloadResume}
-        title="Download Resume (Dhruv_Kedia_Resume.pdf)"
-        style={{
-          position: 'absolute',
-          top: '1.2rem',
-          right: '1.2rem',
-          background: 'rgba(255, 255, 255, 0.04)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          borderRadius: '6px',
-          padding: '0.45rem 0.9rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.45rem',
-          color: '#ffffff',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '0.72rem',
-          fontWeight: 600,
-          cursor: 'pointer',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
-          transition: 'border-color 0.25s ease'
-        }}
-      >
-        <Download size={13} style={{ color: accentColor }} />
-        <span>RESUME</span>
-      </motion.button>
-
       {/* Main Name Heading */}
       <h1
         style={{
@@ -169,58 +143,128 @@ export const HeroTile: React.FC<HeroTileProps> = ({ accentColor }) => {
         {heroBio.bioSummary}
       </p>
 
-      {/* Embedded Glowing Social Dock (Shown strictly in Mobile / Tablet Mode < 1024px) */}
+      {/* Embedded Glowing Social Dock & Seamless Resume Button (Shown strictly in Mobile / Tablet Mode < 1024px) */}
       <div className="hero-mobile-socials">
-        {socialLinks.map((item) => {
-          const isCopied = copiedId === item.id;
-          return (
-            <motion.div
-              key={item.id}
-              whileHover={{ scale: 1.25, color: accentColor }}
-              whileTap={{ scale: 0.85 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-              onClick={(e) => handleSocialClick(e, item)}
-              title={item.id === 'phone' ? `Copy Phone (${item.url})` : item.name}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'rgba(255, 255, 255, 0.85)',
-                cursor: 'pointer',
-                padding: '0.45rem',
-                transition: 'filter 0.25s ease, color 0.25s ease'
-              }}
-              className="social-logo-glow-item"
-            >
-              <AnimatePresence mode="wait">
-                {isCopied ? (
-                  <motion.div
-                    key="copied"
-                    initial={{ scale: 0.2, rotate: -45, opacity: 0 }}
-                    animate={{ scale: 1.15, rotate: 0, opacity: 1 }}
-                    exit={{ scale: 0.2, rotate: 45, opacity: 0 }}
-                    transition={{ type: 'spring', stiffness: 450, damping: 22 }}
-                    style={{ color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  >
-                    <Check size={20} />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="icon"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.8, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  >
-                    {item.svgPath}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          );
-        })}
+        <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'center', justifyContent: 'center', flexWrap: 'nowrap' }}>
+          {socialLinks.map((item) => {
+            const isCopied = copiedId === item.id;
+            return (
+              <motion.div
+                key={item.id}
+                whileHover={{ scale: 1.25, color: accentColor }}
+                whileTap={{ scale: 0.85 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                onClick={(e) => handleSocialClick(e, item)}
+                title={
+                  item.id === 'phone'
+                    ? `Copy Phone (${item.url})`
+                    : item.id === 'email'
+                    ? `Copy Email (${item.url})`
+                    : item.name
+                }
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'rgba(255, 255, 255, 0.85)',
+                  cursor: 'pointer',
+                  padding: '0.35rem',
+                  transition: 'filter 0.25s ease, color 0.25s ease'
+                }}
+                className="social-logo-glow-item"
+              >
+                <AnimatePresence mode="wait">
+                  {isCopied ? (
+                    <motion.div
+                      key="copied"
+                      initial={{ scale: 0.2, rotate: -45, opacity: 0 }}
+                      animate={{ scale: 1.15, rotate: 0, opacity: 1 }}
+                      exit={{ scale: 0.2, rotate: 45, opacity: 0 }}
+                      transition={{ type: 'spring', stiffness: 450, damping: 22 }}
+                      style={{ color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      <Check size={20} />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="icon"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.8, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      {item.svgPath}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+
+          {/* Fixed-Width RESUME Button (Prevents Layout Shifting) */}
+          <motion.button
+            whileHover={{ scale: 1.15, color: accentColor }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            onClick={handleDownloadResume}
+            title="Download Resume (Dhruv_Kedia_Resume.pdf)"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'rgba(255, 255, 255, 0.85)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+              cursor: 'pointer',
+              padding: '0.35rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '64px',
+              transition: 'color 0.25s ease, text-shadow 0.25s ease'
+            }}
+            className="resume-text-btn-glow"
+          >
+            <AnimatePresence mode="wait">
+              {copiedId === 'resume' ? (
+                <motion.div
+                  key="hero-resume-copied"
+                  initial={{ scale: 0.2, rotate: -45, opacity: 0 }}
+                  animate={{ scale: 1.15, rotate: 0, opacity: 1 }}
+                  exit={{ scale: 0.2, rotate: 45, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 450, damping: 22 }}
+                  style={{ color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '64px' }}
+                >
+                  <Check size={18} />
+                </motion.div>
+              ) : (
+                <motion.span
+                  key="hero-resume-text"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  style={{ display: 'inline-block', width: '64px', textAlign: 'center' }}
+                >
+                  RESUME
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        </div>
       </div>
+
+      {/* Animated Mobile Scroll Down Hint Indicator */}
+      <motion.div
+        className="hero-mobile-scroll-hint"
+        animate={{ y: [0, 6, 0], opacity: [0.5, 1, 0.5] }}
+        transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+      >
+        <ChevronDown size={14} style={{ color: accentColor }} />
+        <span>SCROLL TO EXPLORE</span>
+      </motion.div>
     </div>
   );
 };

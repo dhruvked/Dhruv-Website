@@ -15,22 +15,43 @@ export function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  const isAdminRoute = currentPath.toLowerCase() === '/admin';
+  const normalizedPath = currentPath.toLowerCase();
+  const isAdminRoute = normalizedPath === '/admin';
+  const isLayoutRoute = normalizedPath === '/layout';
 
   useEffect(() => {
     if (isAdminRoute) {
       document.documentElement.classList.add('admin-mode-active');
       document.body.classList.add('admin-mode-active');
-    } else {
+      document.documentElement.classList.remove('layout-mode-active');
+      document.body.classList.remove('layout-mode-active');
+    } else if (isLayoutRoute) {
+      document.documentElement.classList.add('layout-mode-active');
+      document.body.classList.add('layout-mode-active');
       document.documentElement.classList.remove('admin-mode-active');
       document.body.classList.remove('admin-mode-active');
+    } else {
+      document.documentElement.classList.remove('admin-mode-active', 'layout-mode-active');
+      document.body.classList.remove('admin-mode-active', 'layout-mode-active');
     }
-  }, [isAdminRoute]);
+  }, [isAdminRoute, isLayoutRoute]);
 
   return (
-    <div className={`app-root-wrapper ${isAdminRoute ? 'admin-mode-active' : ''}`}>
-      <div className={`app-main-container ${isAdminRoute ? 'admin-mode-active' : ''}`}>
-        {isAdminRoute ? <AdminPage /> : <MonolithicGrid />}
+    <div
+      className={`app-root-wrapper ${isAdminRoute ? 'admin-mode-active' : ''} ${
+        isLayoutRoute ? 'layout-mode-active' : ''
+      }`}
+    >
+      <div
+        className={`app-main-container ${isAdminRoute ? 'admin-mode-active' : ''} ${
+          isLayoutRoute ? 'layout-mode-active' : ''
+        }`}
+      >
+        {isAdminRoute ? (
+          <AdminPage />
+        ) : (
+          <MonolithicGrid isEditMode={isLayoutRoute} />
+        )}
       </div>
     </div>
   );

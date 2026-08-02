@@ -13,6 +13,7 @@ import { DeveloperDeskTile } from './DeveloperDeskTile';
 interface TileCubeProps {
   tile: TileData;
   isSelected?: boolean;
+  isEditMode?: boolean;
   onSelect?: (id: string) => void;
   onUpdateGridSpan?: (id: string, newSpan: { colStart?: number; rowStart?: number; colSpan: number; rowSpan: number }) => void;
 }
@@ -20,6 +21,7 @@ interface TileCubeProps {
 export const TileCube: React.FC<TileCubeProps> = ({
   tile,
   isSelected,
+  isEditMode: _isEditMode = false,
   onSelect,
   onUpdateGridSpan
 }) => {
@@ -448,7 +450,7 @@ export const TileCube: React.FC<TileCubeProps> = ({
   if (tile.id === 'clock-tile') {
     return (
       <div
-        className={`cube-wrapper ${isSelected ? 'selected-tile-active' : ''}`}
+        className={`cube-wrapper cube-wrapper-clock ${isSelected ? 'selected-tile-active' : ''}`}
         onClick={handleTileClick}
         style={{
           gridColumnStart: colStart || 'auto',
@@ -546,7 +548,7 @@ export const TileCube: React.FC<TileCubeProps> = ({
   if (tile.id === 'developer-desk') {
     return (
       <div
-        className={`cube-wrapper ${isSelected ? 'selected-tile-active' : ''}`}
+        className={`cube-wrapper cube-wrapper-developer-desk ${isSelected ? 'selected-tile-active' : ''}`}
         onClick={handleTileClick}
         style={{
           gridColumnStart: colStart || 'auto',
@@ -644,7 +646,7 @@ export const TileCube: React.FC<TileCubeProps> = ({
   if (tile.id === 'terminal-sandbox') {
     return (
       <div
-        className={`cube-wrapper ${isSelected ? 'selected-tile-active' : ''}`}
+        className={`cube-wrapper cube-wrapper-terminal ${isSelected ? 'selected-tile-active' : ''}`}
         onClick={handleTileClick}
         style={{
           gridColumnStart: colStart || 'auto',

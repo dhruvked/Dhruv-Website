@@ -31,9 +31,11 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
   const terminalEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // Auto-scroll to bottom of terminal output
+  // Auto-scroll inside terminal container ONLY when user enters new commands (prevents page jump on load)
   useEffect(() => {
-    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (history.length > 1) {
+      terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [history]);
 
   const handleTerminalClick = () => {
