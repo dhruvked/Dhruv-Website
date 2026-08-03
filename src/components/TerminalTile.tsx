@@ -13,7 +13,6 @@ interface CommandHistory {
 export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
   const [inputVal, setInputVal] = useState('');
   const [currentAccent, setCurrentAccent] = useState(accentColor);
-  const [isMatrixMode, setIsMatrixMode] = useState(false);
   const [history, setHistory] = useState<CommandHistory[]>([
     {
       command: 'dhruv-kedia --info',
@@ -117,9 +116,6 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
 
             <span style={{ color: currentAccent, fontWeight: 'bold' }}>status</span>
             <span style={{ color: 'var(--text-muted)' }}>Display system health, region, and uptime</span>
-
-            <span style={{ color: currentAccent, fontWeight: 'bold' }}>matrix</span>
-            <span style={{ color: 'var(--text-muted)' }}>Toggle 8-bit digital rain visualizer stream</span>
 
             <span style={{ color: currentAccent, fontWeight: 'bold' }}>contact</span>
             <span style={{ color: 'var(--text-muted)' }}>Display email, phone & social connect links</span>
@@ -246,13 +242,6 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
           <div>UTC Telemetry Time: <span style={{ color: 'var(--text-muted)' }}>{nowUtc}</span></div>
         </div>
       );
-    } else if (lower === 'matrix') {
-      setIsMatrixMode(!isMatrixMode);
-      responseNode = (
-        <div style={{ color: '#10b981', fontWeight: 600 }}>
-          {isMatrixMode ? '[MATRIX RAIN DISABLED]' : '[MATRIX RAIN STREAM LAUNCHED 🟢] Type matrix again to exit.'}
-        </div>
-      );
     } else if (lower === 'skills') {
       responseNode = (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
@@ -371,7 +360,7 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
         </div>
 
         <div style={{ fontSize: '0.6rem', color: currentAccent, fontWeight: 600 }}>
-          {isMatrixMode ? 'MATRIX STREAMING' : 'LIVE CLI'}
+          LIVE CLI
         </div>
       </div>
 
@@ -389,30 +378,6 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
           position: 'relative'
         }}
       >
-        {/* Matrix Digital Rain Animation Overlay */}
-        {isMatrixMode && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              pointerEvents: 'none',
-              background: 'rgba(4, 4, 6, 0.85)',
-              color: '#10b981',
-              fontSize: '0.65rem',
-              overflow: 'hidden',
-              padding: '0.5rem',
-              lineHeight: 1.2,
-              opacity: 0.8,
-              zIndex: 5
-            }}
-          >
-            <div>01000100 01001000 01010010 01010101 01010110 // DHRUV KEDIA MATRIX</div>
-            <div>01010111 01000101 01000010 01010010 01010100 01000011 // WEBRTC STREAM OK</div>
-            <div>01000100 01000101 01000011 01000001 01010010 01010100 // DECART AI REALTIME READY</div>
-            <div style={{ color: currentAccent }}>&gt;&gt; SYSTEM ACTIVE // Type 'matrix' to toggle off &lt;&lt;</div>
-          </div>
-        )}
-
         {history.map((item, idx) => (
           <div key={`cmd-${idx}`} style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
