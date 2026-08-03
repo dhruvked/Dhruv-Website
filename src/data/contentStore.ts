@@ -81,23 +81,31 @@ export const INITIAL_CONTENT: PortfolioContentModel = {
   projects: [
     {
       id: 'p1',
-      title: 'SEAM AI',
+      title: 'SEAM',
       tag: '01 / SEAM',
-      tagline: 'Multi-Agent Task Orchestration Framework',
-      description: 'Autonomous multi-agent execution engine with streaming DAG execution and vector memory context.',
-      techPills: ['TypeScript', 'Node.js', 'Vector DB', 'OpenAI'],
+      tagline: 'AI Healthcare Platform',
+      description: 'AI-powered healthcare platform leveraging India\'s ABDM ecosystem to simplify medical record management, doctor-patient interactions, and clinical insights.',
+      techPills: ['ABDM Ecosystem', 'LLM Summarization', 'EMR / EHR', 'TypeScript', 'Node.js'],
       codeUrl: 'https://github.com/dhruvked',
-      specs: ['Sub-100ms agent routing', 'Redis pub/sub DAG stream', 'Vector memory cache']
+      specs: [
+        'India ABDM ecosystem integration & EMR/EHR pipelines',
+        'LLM-assisted medical record summarization for clinical insights',
+        'Streamlined doctor-patient interaction & record management'
+      ]
     },
     {
       id: 'p2',
-      title: 'VIRTUAL TRY-ON',
-      tag: '02 / TRY-ON',
-      tagline: 'Real-Time Video Garment Swap',
-      description: 'WebRTC video stream processing pipeline with real-time pose estimation and AI garment overlay.',
-      techPills: ['Python', 'WebRTC', 'PyTorch', 'FastAPI'],
+      title: 'SAMPLER PROJECT',
+      tag: '02 / SAMPLER',
+      tagline: 'MIDI-Controlled Audio Sampler',
+      description: 'Built a MIDI-controlled audio sampler using Arduino Nano, SD module, and audio hardware. Awarded Best Project for 2022 in Manning CICS, UMass Amherst.',
+      techPills: ['Arduino Nano', 'C++', 'SD Module', 'Audio Hardware', 'MIDI'],
       codeUrl: 'https://github.com/dhruvked',
-      specs: ['60 FPS WebRTC stream', 'Zero-latency pose tracking', 'GPU accelerated inferencing']
+      specs: [
+        'Awarded Best Project 2022 at Manning CICS (UMass Amherst)',
+        'Custom audio hardware circuit design & SD streaming',
+        'Real-time MIDI controller input response'
+      ]
     },
     {
       id: 'p3',
@@ -133,12 +141,12 @@ export const INITIAL_CONTENT: PortfolioContentModel = {
     },
     {
       id: 's3',
-      domain: 'Python & Data Pipelines',
-      percentage: 85,
+      domain: 'AI & Realtime Systems',
+      percentage: 92,
       specDetails: [
-        'FastAPI & Async Engine Microservices',
-        'PyTorch Data Loaders & Model Serving',
-        'Pandas & PyArrow High Performance Data Frames'
+        'Decart AI Realtime API & WebRTC Live Video-to-Video Streams',
+        'Interactive AI Avatars (OpenAI, Gemini, HeyGen Streaming APIs)',
+        'Dataset Evaluation Platform for 500+ Interactions & Fine-Tuning'
       ]
     },
     {
@@ -170,7 +178,7 @@ export const INITIAL_CONTENT: PortfolioContentModel = {
   }
 };
 
-const CONTENT_STORAGE_KEY = 'dhruv_portfolio_content_data_v2';
+const CONTENT_STORAGE_KEY = 'dhruv_portfolio_content_data_v3';
 
 export class ContentStore {
   private static cachedContent: PortfolioContentModel | null = null;

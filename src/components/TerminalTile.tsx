@@ -77,9 +77,9 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
         responseNode = (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
             <div><span style={{ color: accentColor }}>[Programming]:</span> TypeScript, JavaScript, Python, SQL, HTML, CSS</div>
-            <div><span style={{ color: '#38bdf8' }}>[Backend/Data]:</span> Node.js, Express, React, Next.js, PostgreSQL, MongoDB</div>
-            <div><span style={{ color: '#10b981' }}>[AI/LLM]:</span> OpenAI API, Gemini API, Decart AI, HeyGen, RAG Pipelines</div>
-            <div><span style={{ color: '#a855f7' }}>[Cloud/DevOps]:</span> AWS (EKS/ECR), Docker, Kubernetes, CI/CD, Headless Blender</div>
+            <div><span style={{ color: '#38bdf8' }}>[Backend/Data]:</span> Node.js, Express, React, React Native, Next.js, PostgreSQL, MongoDB</div>
+            <div><span style={{ color: '#10b981' }}>[AI & Realtime]:</span> Decart AI Realtime API, WebRTC, OpenAI, Gemini, HeyGen, RAG</div>
+            <div><span style={{ color: '#a855f7' }}>[Cloud/DevOps]:</span> AWS (EKS/ECR), Docker, Kubernetes, CI/CD, Headless Blender (bpy)</div>
           </div>
         );
         break;
@@ -87,10 +87,9 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
       case 'projects':
         responseNode = (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <div><span style={{ color: accentColor, fontWeight: 'bold' }}>1. Seam:</span> AI Healthcare Platform (ABDM Integration, EMR Pipelines)</div>
-            <div><span style={{ color: '#38bdf8', fontWeight: 'bold' }}>2. AI Try-On Platform:</span> Real-time video garment transfer (Decart AI + WebRTC)</div>
+            <div><span style={{ color: accentColor, fontWeight: 'bold' }}>1. Seam:</span> AI Healthcare Platform (ABDM Ecosystem Integration & EMR Pipelines)</div>
+            <div><span style={{ color: '#38bdf8', fontWeight: 'bold' }}>2. Sampler Project:</span> MIDI Hardware Audio Sampler (Manning CICS Best Project 2022 Award)</div>
             <div><span style={{ color: '#10b981', fontWeight: 'bold' }}>3. 3D Asset Pipeline:</span> Automated Blender mesh recalculation & GLB alignment</div>
-            <div><span style={{ color: '#a855f7', fontWeight: 'bold' }}>4. Habits:</span> Full-stack habit tracker & analytics application</div>
           </div>
         );
         break;
