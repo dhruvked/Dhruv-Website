@@ -91,9 +91,6 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
           <div style={{ fontWeight: 'bold', color: currentAccent }}>AVAILABLE CLI COMMANDS:</div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '130px 1fr', gap: '0.35rem 0.6rem', fontSize: '0.72rem', marginLeft: '0.4rem' }}>
-            <span style={{ color: currentAccent, fontWeight: 'bold' }}>ask &lt;query&gt;</span>
-            <span style={{ color: 'var(--text-muted)' }}>Ask AI agent questions about Dhruv's background & experience</span>
-
             <span style={{ color: currentAccent, fontWeight: 'bold' }}>resume</span>
             <span style={{ color: 'var(--text-muted)' }}>View 1-page ASCII CV overview in terminal</span>
 
@@ -130,29 +127,6 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
             <span style={{ color: currentAccent, fontWeight: 'bold' }}>clear</span>
             <span style={{ color: 'var(--text-muted)' }}>Clear terminal screen history</span>
           </div>
-        </div>
-      );
-    } else if (lower.startsWith('ask ')) {
-      const query = lower.replace('ask ', '').trim();
-      let answerText = '';
-
-      if (query.includes('hire') || query.includes('why')) {
-        answerText = 'Dhruv combines deep AI engineering (Decart AI, WebRTC, LLMs, RAG) with production-grade full-stack delivery (React 19, TypeScript, AWS EKS). He builds systems focused on sub-100ms task routing, 60 FPS video pipelines, and high reliability.';
-      } else if (query.includes('choreo') || query.includes('work') || query.includes('experience')) {
-        answerText = 'Full Stack AI Engineer at Choreo, LLC (Remote). Engineered real-time AI Virtual Try-On (Decart AI + WebRTC), 3D Blender (bpy) automation pipelines, interactive AI avatars (OpenAI, Gemini, HeyGen for 100+ live sessions), and AWS EKS cloud infrastructure.';
-      } else if (query.includes('webrtc') || query.includes('realtime') || query.includes('try-on')) {
-        answerText = 'Architected a 60 FPS WebRTC video stream processing pipeline integrated with Decart AI Realtime API for live camera video-to-video garment transformation.';
-      } else if (query.includes('umass') || query.includes('education') || query.includes('degree')) {
-        answerText = 'BS in Computer Science from University of Massachusetts, Amherst (Sep 2019 – May 2023). Recipient of the Best Project Award 2022 at Manning CICS.';
-      } else if (query.includes('skills') || query.includes('tech')) {
-        answerText = 'TypeScript, React 19, Next.js, Node.js, Python, Decart AI Realtime API, WebRTC, PyTorch, OpenAI/Gemini APIs, RAG, AWS (EKS/ECR), Docker, Kubernetes, & Headless Blender (bpy).';
-      } else {
-        answerText = `AI Agent Query Response: Dhruv Kedia is a Full-Stack & Distributed AI Systems Engineer based in Kolkata, India. He holds a BS in Computer Science from UMass Amherst and specializes in realtime AI agent architectures & WebRTC streaming.`;
-      }
-
-      responseNode = (
-        <div style={{ color: 'rgba(255, 255, 255, 0.9)', lineHeight: 1.5 }}>
-          {answerText}
         </div>
       );
     } else if (lower.startsWith('theme ')) {
@@ -458,7 +432,7 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="type 'help' or 'ask why hire'..."
+            placeholder="type 'help' or command..."
             style={{
               flex: 1,
               background: 'transparent',
