@@ -49,23 +49,28 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
   };
 
   const changeGlobalTheme = (colorName: string): { success: boolean; hex: string; message: string } => {
-    const themes: Record<string, string> = {
-      orange: '#ff6b00',
-      cyan: '#00f0ff',
-      emerald: '#10b981',
-      violet: '#a855f7',
-      magenta: '#ff007f',
-      gold: '#eab308'
+    const themes: Record<string, { hex: string; bright: string; glow: string }> = {
+      orange: { hex: '#ff6b00', bright: '#ff8533', glow: 'rgba(255, 107, 0, 0.22)' },
+      cyan: { hex: '#00f0ff', bright: '#33f3ff', glow: 'rgba(0, 240, 255, 0.22)' },
+      emerald: { hex: '#10b981', bright: '#34d399', glow: 'rgba(16, 185, 129, 0.22)' },
+      violet: { hex: '#a855f7', bright: '#c084fc', glow: 'rgba(168, 85, 247, 0.22)' },
+      magenta: { hex: '#ff007f', bright: '#ff3399', glow: 'rgba(255, 0, 127, 0.22)' },
+      gold: { hex: '#eab308', bright: '#fde047', glow: 'rgba(234, 179, 8, 0.22)' }
     };
 
-    const targetHex = themes[colorName.toLowerCase()];
-    if (targetHex) {
-      document.documentElement.style.setProperty('--accent-orange', targetHex);
-      setCurrentAccent(targetHex);
+    const target = themes[colorName.toLowerCase()];
+    if (target) {
+      document.documentElement.style.setProperty('--accent-orange', target.hex);
+      document.documentElement.style.setProperty('--accent-orange-bright', target.bright);
+      document.documentElement.style.setProperty('--accent-orange-glow', target.glow);
+      setCurrentAccent(target.hex);
+
+      window.dispatchEvent(new CustomEvent('portfolioThemeChanged', { detail: target.hex }));
+
       return {
         success: true,
-        hex: targetHex,
-        message: `[THEME CHANGED] Switched portfolio theme to ${colorName.toUpperCase()} (${targetHex})`
+        hex: target.hex,
+        message: `[THEME CHANGED] Switched portfolio theme to ${colorName.toUpperCase()} (${target.hex})`
       };
     }
     return {

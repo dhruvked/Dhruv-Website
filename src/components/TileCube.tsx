@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, GripVertical } from 'lucide-react';
 import type { TileData } from '../data/portfolioData';
 import { HeroTile } from './HeroTile';
@@ -26,7 +26,21 @@ export const TileCube: React.FC<TileCubeProps> = ({
   onUpdateGridSpan
 }) => {
   const [isRotated, setIsRotated] = useState(false);
-  const accentColor = tile.front?.accentColor || 'var(--accent-orange)';
+  const [overrideAccent, setOverrideAccent] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleThemeChange = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      if (customEvent.detail) {
+        setOverrideAccent(customEvent.detail);
+      }
+    };
+
+    window.addEventListener('portfolioThemeChanged', handleThemeChange);
+    return () => window.removeEventListener('portfolioThemeChanged', handleThemeChange);
+  }, []);
+
+  const accentColor = overrideAccent || tile.front?.accentColor || 'var(--accent-orange)';
 
   const colStart = tile.gridSpan?.colStart;
   const rowStart = tile.gridSpan?.rowStart;
