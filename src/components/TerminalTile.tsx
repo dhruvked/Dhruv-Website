@@ -151,9 +151,8 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
       }
 
       responseNode = (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-          <div style={{ color: currentAccent, fontWeight: 'bold' }}>🤖 AI AGENT RESPONSE:</div>
-          <div style={{ color: 'rgba(255, 255, 255, 0.9)', lineHeight: 1.5, paddingLeft: '0.5rem' }}>{answerText}</div>
+        <div style={{ color: 'rgba(255, 255, 255, 0.9)', lineHeight: 1.5 }}>
+          {answerText}
         </div>
       );
     } else if (lower.startsWith('theme ')) {
