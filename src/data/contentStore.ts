@@ -55,27 +55,27 @@ export const INITIAL_CONTENT: PortfolioContentModel = {
   timeline: [
     {
       id: 't1',
-      year: '2024 – PRESENT',
-      role: 'Senior Full-Stack & AI Engineer',
-      description: 'Multi-agent AI workflows & distributed systems.'
+      year: 'AUG 2025 – PRESENT',
+      role: 'Full Stack AI Engineer @ Choreo, LLC',
+      description: 'Real-time AI Virtual Try-On (Decart AI + WebRTC), 3D Blender (bpy) pipelines, interactive AI avatars & AWS EKS cloud infrastructure.'
     },
     {
       id: 't2',
-      year: '2022 – 2024',
-      role: 'Full-Stack Systems Engineer',
-      description: 'High-throughput APIs & cloud microservices.'
+      year: 'AUG 2023 – AUG 2025',
+      role: 'Manager in Information Systems @ Consync Infra',
+      description: 'Construction site ERP labor & inventory tracking, eliminating paper tracking and reducing reporting latency by 85%.'
     },
     {
       id: 't3',
-      year: '2021 – 2022',
-      role: 'Software Engineering Intern',
-      description: 'Backend microservices & open-source tools.'
+      year: 'MAY 2022 – AUG 2022',
+      role: 'Database Management Intern @ Gamut Systems',
+      description: 'Automated ERP data migration pipelines for 5+ client projects (<1% downtime) and boosted query performance by 20%.'
     },
     {
       id: 't4',
-      year: '2021',
-      role: 'B.Tech Computer Science',
-      description: 'B.Tech CS degree; focused on algorithms.'
+      year: 'SEP 2019 – MAY 2023',
+      role: 'BS in Computer Science @ UMass Amherst',
+      description: 'Bachelor of Science in CS at University of Massachusetts, Amherst; algorithms, distributed systems, & AI architectures.'
     }
   ],
   projects: [
@@ -115,42 +115,62 @@ export const INITIAL_CONTENT: PortfolioContentModel = {
       id: 's1',
       domain: 'AI Systems & RAG',
       percentage: 95,
-      specDetails: ['Autonomous Multi-Agent Task DAG Routing', 'Vector Embeddings & Semantic Search Context', 'LLM Fine-tuning & High-Throughput Streaming API']
+      specDetails: [
+        'Autonomous Multi-Agent Task DAG Routing',
+        'Vector Embeddings & Semantic Search Context',
+        'LLM Fine-tuning & High-Throughput Streaming API'
+      ]
     },
     {
       id: 's2',
       domain: 'Full-Stack (TS / React / Node)',
       percentage: 90,
-      specDetails: ['React 19 & Next.js App Router Architecture', 'TypeScript Strict Systems Design', 'State Management & WebSockets Streaming']
+      specDetails: [
+        'React 19 & Next.js App Router Architecture',
+        'TypeScript Strict Systems Design',
+        'State Management & WebSockets Streaming'
+      ]
     },
     {
       id: 's3',
       domain: 'Python & Data Pipelines',
       percentage: 85,
-      specDetails: ['FastAPI & Async Engine Microservices', 'PyTorch Data Loaders & Model Serving', 'Pandas & PyArrow High Performance Data Frames']
+      specDetails: [
+        'FastAPI & Async Engine Microservices',
+        'PyTorch Data Loaders & Model Serving',
+        'Pandas & PyArrow High Performance Data Frames'
+      ]
     },
     {
       id: 's4',
       domain: 'DevOps & Cloud',
       percentage: 74,
-      specDetails: ['Docker & Kubernetes EKS Cluster Orchestration', 'CI/CD GitHub Actions & Vercel Deployments', 'Redis & Postgres Database Optimizations']
+      specDetails: [
+        'Docker & Kubernetes EKS Cluster Orchestration',
+        'CI/CD GitHub Actions & Vercel Deployments',
+        'Redis & Postgres Database Optimizations'
+      ]
     },
     {
       id: 's5',
       domain: '3D Automation',
       percentage: 60,
-      specDetails: ['Headless Blender Python (bpy) Scripting', 'Draco GLTF Mesh Compression & Three.js', 'Procedural 3D Asset Render Microservices']
+      specDetails: [
+        'Headless Blender Python (bpy) Scripting',
+        'Draco GLTF Mesh Compression & Three.js',
+        'Procedural 3D Asset Render Microservices'
+      ]
     }
   ],
   socials: {
     github: 'https://github.com/dhruvked',
     linkedin: 'https://linkedin.com/in/dhruvkedia',
-    phone: '+91 9876543210',
-    email: 'dhruvkedaria@gmail.com'
+    phone: '+91 9007153222',
+    email: 'dhruvkedia2@gmail.com'
   }
 };
 
-const CONTENT_STORAGE_KEY = 'dhruv_portfolio_content_data_v1';
+const CONTENT_STORAGE_KEY = 'dhruv_portfolio_content_data_v2';
 
 export class ContentStore {
   private static cachedContent: PortfolioContentModel | null = null;
