@@ -111,12 +111,6 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
             <span style={{ color: currentAccent, fontWeight: 'bold' }}>projects</span>
             <span style={{ color: 'var(--text-muted)' }}>List flagship engineering applications & awards</span>
 
-            <span style={{ color: currentAccent, fontWeight: 'bold' }}>ping</span>
-            <span style={{ color: 'var(--text-muted)' }}>Test network latency telemetry to production server</span>
-
-            <span style={{ color: currentAccent, fontWeight: 'bold' }}>status</span>
-            <span style={{ color: 'var(--text-muted)' }}>Display system health, region, and uptime</span>
-
             <span style={{ color: currentAccent, fontWeight: 'bold' }}>contact</span>
             <span style={{ color: 'var(--text-muted)' }}>Display email, phone & social connect links</span>
 
@@ -220,28 +214,6 @@ export const TerminalTile: React.FC<TerminalTileProps> = ({ accentColor }) => {
       } else {
         responseNode = <div style={{ color: '#ef4444' }}>cat: {fileName}: No such file or directory. Try 'ls'.</div>;
       }
-    } else if (lower === 'ping') {
-      responseNode = (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', color: '#10b981', fontFamily: 'var(--font-mono)' }}>
-          <div>PING dhruv-kedia.dev (76.76.21.21): 56 data bytes</div>
-          <div>64 bytes from 76.76.21.21: icmp_seq=1 ttl=116 time=34.2 ms</div>
-          <div>64 bytes from 76.76.21.21: icmp_seq=2 ttl=116 time=31.8 ms</div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem', marginTop: '0.2rem' }}>
-            --- dhruv-kedia.dev ping statistics --- 2 packets transmitted, 2 received, 0.0% packet loss, rtt min/avg/max = 31.8/33.0/34.2 ms
-          </div>
-        </div>
-      );
-    } else if (lower === 'status') {
-      const nowUtc = new Date().toUTCString();
-      responseNode = (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', color: 'rgba(255, 255, 255, 0.85)' }}>
-          <div style={{ color: currentAccent, fontWeight: 'bold' }}>[SYSTEM TELEMETRY STATUS]</div>
-          <div>Status: <span style={{ color: '#10b981', fontWeight: 'bold' }}>🟢 ONLINE (99.98% Uptime)</span></div>
-          <div>Server Region: <span style={{ color: '#38bdf8' }}>Washington, D.C., USA (iad1)</span></div>
-          <div>Production Build: <span style={{ color: 'var(--text-muted)' }}>v2.6.0-main (Vercel Edge)</span></div>
-          <div>UTC Telemetry Time: <span style={{ color: 'var(--text-muted)' }}>{nowUtc}</span></div>
-        </div>
-      );
     } else if (lower === 'skills') {
       responseNode = (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
